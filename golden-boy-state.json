@@ -6,15 +6,17 @@
   "last_error": null,
   "performance_count": 8,
   "last_heartbeat": "2026-10-18T20:49:02.861530+00:00",
-  "last_state_change": "2026-10-26T18:27:24.614631+00:00",
-  "last_attempt_at": "2026-10-26T18:27:24.614631+00:00",
-  "last_run_id": "40377862640",
-  "candidate_notified_keys": [],
-  "candidate_episode": 54,
-  "current_candidate_count": 0,
-  "last_source_read_at": "2026-10-26T18:27:24.614631+00:00",
+  "last_state_change": "2026-10-26T18:32:27.645758+00:00",
+  "last_attempt_at": "2026-10-26T18:32:27.645758+00:00",
+  "last_run_id": "40378609454",
+  "candidate_notified_keys": [
+    "2026-10-28T14:00:00+00:00|https://ticketing.almeida.co.uk/8745/8894"
+  ],
+  "candidate_episode": 55,
+  "current_candidate_count": 1,
+  "last_source_read_at": "2026-10-26T18:32:27.645758+00:00",
   "candidate_notification_channel": "manual_gmail_acknowledged",
-  "last_checked_at": "2026-10-26T18:27:25.550537+00:00",
-  "check_count": 2061,
+  "last_checked_at": "2026-10-26T18:32:42.014260+00:00",
+  "check_count": 2062,
   "failure_episode": 4
 }
