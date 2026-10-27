@@ -1,22 +1,22 @@
 {
-  "status": "unknown",
+  "status": "sold_out",
   "notified_keys": [],
-  "consecutive_failures": 1,
+  "consecutive_failures": 0,
   "failure_notice_sent": false,
-  "last_error": "Booking page redirected to a different performance",
+  "last_error": null,
   "performance_count": 7,
   "last_heartbeat": "2026-10-18T20:49:02.861530+00:00",
-  "last_state_change": "2026-10-27T13:22:26.185030+00:00",
-  "last_attempt_at": "2026-10-27T13:22:26.185030+00:00",
-  "last_run_id": "40511433548",
+  "last_state_change": "2026-10-27T13:27:26.556577+00:00",
+  "last_attempt_at": "2026-10-27T13:27:26.556577+00:00",
+  "last_run_id": "40512158312",
   "candidate_notified_keys": [
     "2026-10-28T14:00:00+00:00|https://ticketing.almeida.co.uk/8745/8894"
   ],
   "candidate_episode": 60,
   "current_candidate_count": 1,
-  "last_source_read_at": "2026-10-27T13:22:26.185030+00:00",
+  "last_source_read_at": "2026-10-27T13:27:26.556577+00:00",
   "candidate_notification_channel": "manual_gmail_acknowledged",
-  "last_checked_at": "2026-10-27T13:17:28.424485+00:00",
-  "check_count": 2282,
+  "last_checked_at": "2026-10-27T13:27:34.297634+00:00",
+  "check_count": 2283,
   "failure_episode": 5
 }
