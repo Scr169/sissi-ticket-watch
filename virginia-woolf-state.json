@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-10-28T00:37:30.418896+00:00",
-  "last_run_id": "40609910731",
-  "last_source_read_at": "2026-10-28T00:37:30.418896+00:00",
+  "last_attempt_at": "2026-10-28T00:42:30.949967+00:00",
+  "last_run_id": "40610443280",
+  "last_source_read_at": "2026-10-28T00:42:30.949967+00:00",
   "candidate_notified_keys": [
     "2026-10-28T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020472"
   ],
@@ -12,10 +12,10 @@
   "failure_notice_sent": false,
   "last_error": null,
   "performance_count": 2,
-  "last_checked_at": "2026-10-28T00:37:42.274120+00:00",
-  "check_count": 1765,
+  "last_checked_at": "2026-10-28T00:42:47.305631+00:00",
+  "check_count": 1766,
   "last_heartbeat": "2026-10-21T22:33:52.982651+00:00",
-  "last_state_change": "2026-10-28T00:37:30.418896+00:00",
+  "last_state_change": "2026-10-28T00:42:30.949967+00:00",
   "scope": "london_today_only",
   "scope_date": "2026-10-28",
   "candidate_episode": 4,
