@@ -31,7 +31,7 @@ function fixture(states, dispatchCode=204) {
   return {data,calls,run:name=>vm.runInContext(name+'()',context)};
 }
 const fresh = {status:'sold_out',last_attempt_at:'2026-10-19T13:59:00Z',last_checked_at:'2026-10-19T13:59:02Z'};
-const feeds = golden=>({'monitor-state.json':fresh,'golden-boy-state.json':golden,'an-oak-tree-state.json':fresh,'virginia-woolf-state.json':fresh,'hungry-ghost-state.json':fresh,'jcs-on-stage-state.json':fresh});
+const feeds = golden=>({'monitor-state.json':fresh,'golden-boy-state.json':golden,'an-oak-tree-state.json':fresh,'virginia-woolf-state.json':fresh,'hungry-ghost-state.json':fresh,'lear-state.json':fresh,'jcs-on-stage-state.json':fresh});
 
 test('only actual fresh source reads for both productions produce a healthy heartbeat',()=>{
   const f=fixture(feeds(fresh)); f.run('watchdog'); f.run('watchdog');
@@ -47,6 +47,7 @@ test('one advancing checker cannot keep a stopped second production looking heal
   states['an-oak-tree-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
   states['virginia-woolf-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
   states['hungry-ghost-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
+  states['lear-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
   f.run('watchdog');
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,2);
 });
@@ -111,4 +112,12 @@ test('Bush unknown inventory blocks the heartbeat and names the show in stale al
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,0);
   const issue=f.calls.find(c=>c.url.endsWith('/issues'));
   assert.match(JSON.parse(issue.options.payload).title,/^The Hungry Ghost｜/);
+});
+
+test('Lear is included in real-source health and cannot mask a stopped checker',()=>{
+  const states=feeds(fresh);
+  states['lear-state.json']={status:'unknown',last_attempt_at:'2026-10-19T13:00:00Z'};
+  const f=fixture(states); f.run('watchdog');
+  assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,0);
+  assert.match(JSON.parse(f.calls.find(c=>c.url.endsWith('/issues')).options.payload).title,/^Lear｜/);
 });
