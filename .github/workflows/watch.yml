@@ -65,6 +65,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: xvfb-run -a python3 virginia_woolf.py
+      - name: Check Bush Theatre The Hungry Ghost official availability
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTIFY_USER: ${{ github.repository_owner }}
+        run: python3 hungry_ghost.py
 
   jcs:
     # Separate job after the other shows: a slow LW booking site cannot
