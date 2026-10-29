@@ -2,7 +2,7 @@
 
 仓库：[Scr169/sissi-ticket-watch](https://github.com/Scr169/sissi-ticket-watch)。
 
-正式监控 **Eurotrash、Golden Boy、An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
+正式监控 **Eurotrash、Golden Boy、An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）、The Hungry Ghost** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
 
 ## 独立调度与停跑告警
 
@@ -20,6 +20,7 @@
 | Golden Boy | Almeida 官方筛选日历实际查询；正向信号打开对应官方售票页核验日期、时间和公开可选票 | 2026-10-31 演出结束 | golden-boy-state.json |
 | An Oak Tree / Suranne Jones | The Other Palace官方Spektrix公开票源，仅240703 / 2026-11-15 15:00，正向信号再次排除专属锁座 | 2026-11-15 15:00开演 | an-oak-tree-state.json |
 | Who’s Afraid of Virginia Woolf?（仅当天） | @sohoplace官方日历，只筛选Europe/London今天尚未开演的场次；正向信号打开当天官方nLiven票页确认 | 2026-12-19；每天午夜自动切换日期 | virginia-woolf-state.json |
+| The Hungry Ghost | Bush Theatre官方Spektrix Studio公开场次与库存；空价格带另查明确普通票数，正向信号核对排除专属票的普通库存 | 2026-10-31 20:00最后一场开演 | hungry-ghost-state.json |
 | JCS On-Stage Standing（未启用） | 普通本地浏览器可打开舞台票区；两次GitHub云端Chrome被官网拒绝验证，不能判断库存。仅保留手动诊断，不参加正式心跳 | 需求范围：2026-10-31及之前 | jcs-on-stage-state.json（unknown） |
 
 Eurotrash 官网曾展示 58 项，公开 API 返回 55 场。未返回项包括 Press Night 和 12 月 2 日两场，后两场原因未确认；尚未验证与官网全部场次完全一致。每次重新读取公开列表，不能承诺未公开场次的库存覆盖。
@@ -28,7 +29,7 @@ Golden Boy 官方日历表单与脚本使用 WordPress event 11278，官方售�
 
 ## 两级提醒与去重
 
-邮件标题和预览先显示剧目名，例如 `Eurotrash｜有票了`、`Golden Boy｜购票入口变化，余票待核实`、`An Oak Tree（Suranne Jones）｜有票了`、`Virginia Woolf（仅当天）｜有票了`。GitHub通知邮件会另加仓库前缀。异常、恢复和测试通知也采用剧名在前的格式。
+邮件标题和预览先显示剧目名，例如 `Eurotrash｜有票了`、`Golden Boy｜购票入口变化，余票待核实`、`An Oak Tree（Suranne Jones）｜有票了`、`Virginia Woolf（仅当天）｜有票了`、`The Hungry Ghost｜有票了`。GitHub通知邮件会另加仓库前缀。异常、恢复和测试通知也采用剧名在前的格式。
 
 1. **【购票入口变化，余票待核实】**：官方场次出现公开购票链接或票源正向信号就先提醒，随后继续核验。价格和实际余票未确认时明确说明。
 2. **【放票提醒】有票了**：再次验证至少一张普通公开可选票/座位后补发确认。只有入口按钮不够；会员、邀请或 Access 专属库存不算普通公开票。Audio Described 或 Relaxed 场次本身不等于专属票。
@@ -53,10 +54,13 @@ Golden Boy 官方日历表单与脚本使用 WordPress event 11278，官方售�
 
 运行 python3 -m unittest discover -s tests -v，以及 node --test tests/test_scheduler.cjs。
 
-55 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。10 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。
+62 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。11 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。
+
+Bush《The Hungry Ghost》于2026-10-29新增，任意未来日期和公开票价，截止10月31日20:00。官网四场日期时间与官方API逐一匹配。29日20:00的availability为空价格带，必须另查instance status的明确available值，不能以空列表当零库存。标准官网列价£25，退票实际价格未由库存证实则仍写未知。
 
 ## 官方依据
 
+- [Bush Theatre The Hungry Ghost](https://www.bushtheatre.co.uk/event/the-hungry-ghost/)
 - [Young Vic Eurotrash](https://www.youngvic.org/whats-on/eurotrash/)
 - [Almeida Golden Boy](https://almeida.co.uk/whats-on/golden-boy/) · [官方退票指引](https://almeida.co.uk/how-to-get-tickets-to-golden-boy/)
 - [Google 定时器](https://developers.google.com/apps-script/guides/triggers/installable) · [免费配额](https://developers.google.com/apps-script/guides/services/quotas)
@@ -65,7 +69,7 @@ Golden Boy 官方日历表单与脚本使用 WordPress event 11278，官方售�
 
 ## 新增监控的范围与负载
 
-每五分钟仍只启动一个工作流，正式运行四项监控。Suranne的日常售罄检查只需少量公开只读请求。Woolf仅检查伦敦当天：未来日期的余票及购票页不核验；官方整轮日历有效但今天没有剩余演出时记录no_performances_today并安静待机，仍属于健康检查。空日历、页面错误与无法验证库存仍记unknown。伦敦午夜和夏冬令时切换由Europe/London处理。此流程在GitHub/Google云端执行，不消耗Codex本地定时额度。JCS诊断代码会用普通Chrome逐场打开舞台票区，但目前未通过云端加载，默认不运行；仅手动勾选jcs_probe可再次诊断，失败作业会明确变红。各剧目独立状态、去重和连续失败告警；新增网站失败不应阻止已完成的其他剧目结果保存。全体健康心跳必须包括每个尚未结束的监控。
+每五分钟仍只启动一个工作流，正式运行五项监控。Suranne的日常售罄检查只需少量公开只读请求。Woolf仅检查伦敦当天：未来日期的余票及购票页不核验；官方整轮日历有效但今天没有剩余演出时记录no_performances_today并安静待机，仍属于健康检查。空日历、页面错误与无法验证库存仍记unknown。伦敦午夜和夏冬令时切换由Europe/London处理。此流程在GitHub/Google云端执行，不消耗Codex本地定时额度。JCS诊断代码会用普通Chrome逐场打开舞台票区，但目前未通过云端加载，默认不运行；仅手动勾选jcs_probe可再次诊断，失败作业会明确变红。各剧目独立状态、去重和连续失败告警；新增网站失败不应阻止已完成的其他剧目结果保存。全体健康心跳必须包括每个尚未结束的监控。
 
 只开票区、不改变票数、不点实际座位、不点Update Basket、不接受On-stage Standing Agreement。遇到验证码或未识别票种时记unknown，不把普通席余票或静态£25标签当舞台票。@sohoplace nLiven日历的Low徽标在售罄场次也存在，所以不用它判断有票；官方主页场次计数可能有剧院自身同步/缓存延迟。所有监控都可能漏掉短于检查间隔的退票。演员出席以剧院公告为准。
 
