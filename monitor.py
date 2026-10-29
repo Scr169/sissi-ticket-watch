@@ -228,6 +228,7 @@ def run(*, config=None, observer=None, github=None):
     subject_name = {"eurotrash": "Eurotrash", "golden-boy": "Golden Boy",
                     "an-oak-tree": "An Oak Tree（Suranne Jones）",
                     "virginia-woolf": "Virginia Woolf（仅当天）",
+                    "hungry-ghost": "The Hungry Ghost",
                     "jcs-on-stage": "Jesus Christ Superstar（£25舞台站票）"}.get(prefix, name)
     show_url = config.get("url", SHOW)
     end = config.get("end", END)

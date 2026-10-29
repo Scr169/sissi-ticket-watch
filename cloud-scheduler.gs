@@ -12,7 +12,8 @@ const FEEDS = [
   {name:'Young Vic《Eurotrash》', path:'monitor-state.json', end:ENDS_AT},
   {name:'Almeida《Golden Boy》', path:'golden-boy-state.json', end:'2026-11-01T00:00:00Z'},
   {name:'The Other Palace《An Oak Tree》Suranne Jones', path:'an-oak-tree-state.json', end:'2026-11-15T15:00:00Z'},
-  {name:'@sohoplace《Virginia Woolf》仅当天', path:'virginia-woolf-state.json', end:'2026-12-20T00:00:00Z'}
+  {name:'@sohoplace《Virginia Woolf》仅当天', path:'virginia-woolf-state.json', end:'2026-12-20T00:00:00Z'},
+  {name:'Bush Theatre《The Hungry Ghost》', path:'hungry-ghost-state.json', end:'2026-10-31T20:00:00Z'}
 ];
 // Virginia Woolf resumed on 22 October, strictly London today only.
 // JCS is NOT an active feed: two ordinary cloud Chrome runs were rejected by
