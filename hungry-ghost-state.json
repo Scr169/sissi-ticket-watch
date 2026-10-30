@@ -1,23 +1,19 @@
 {
-  "last_attempt_at": "2026-10-30T17:22:33.546442+00:00",
-  "last_run_id": "41098227650",
-  "last_source_read_at": "2026-10-30T17:22:33.546442+00:00",
-  "candidate_notified_keys": [
-    "2026-10-30T20:00:00+00:00|https://tickets.bushtheatre.co.uk/bushtheatre/website/ChooseSeats.aspx?EventInstanceId=304554&resize=true"
-  ],
-  "current_candidate_count": 1,
-  "status": "available",
-  "notified_keys": [
-    "2026-10-30T20:00:00+00:00|https://tickets.bushtheatre.co.uk/bushtheatre/website/ChooseSeats.aspx?EventInstanceId=304554&resize=true"
-  ],
+  "last_attempt_at": "2026-10-30T17:27:29.544547+00:00",
+  "last_run_id": "41098951981",
+  "last_source_read_at": "2026-10-30T17:27:29.544547+00:00",
+  "candidate_notified_keys": [],
+  "current_candidate_count": 0,
+  "status": "sold_out",
+  "notified_keys": [],
   "consecutive_failures": 0,
   "failure_notice_sent": false,
   "last_error": null,
   "performance_count": 3,
-  "last_checked_at": "2026-10-30T17:22:37.988538+00:00",
-  "check_count": 483,
+  "last_checked_at": "2026-10-30T17:27:30.316642+00:00",
+  "check_count": 484,
   "last_heartbeat": "2026-10-29T01:44:20.559445+00:00",
-  "last_state_change": "2026-10-30T17:22:33.546442+00:00",
+  "last_state_change": "2026-10-30T17:27:29.544547+00:00",
   "candidate_episode": 1,
   "episode": 1
 }
