@@ -1,14 +1,14 @@
 {
   "status": "unknown",
   "notified_keys": [],
-  "consecutive_failures": 2,
-  "failure_notice_sent": false,
+  "consecutive_failures": 3,
+  "failure_notice_sent": true,
   "last_error": "Empty or inconsistent official calendar",
   "performance_count": 1,
   "last_heartbeat": "2026-10-18T20:49:02.861530+00:00",
-  "last_state_change": "2026-10-31T19:37:27.050593+00:00",
-  "last_attempt_at": "2026-10-31T19:37:27.050593+00:00",
-  "last_run_id": "41235080520",
+  "last_state_change": "2026-10-31T19:42:24.859583+00:00",
+  "last_attempt_at": "2026-10-31T19:42:24.859583+00:00",
+  "last_run_id": "41235457990",
   "candidate_notified_keys": [],
   "candidate_episode": 67,
   "current_candidate_count": 0,
@@ -16,5 +16,5 @@
   "candidate_notification_channel": "manual_gmail_acknowledged",
   "last_checked_at": "2026-10-31T19:27:26.098228+00:00",
   "check_count": 3510,
-  "failure_episode": 6
+  "failure_episode": 7
 }
