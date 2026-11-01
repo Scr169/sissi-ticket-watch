@@ -2,7 +2,7 @@
  * Script properties: GITHUB_TOKEN; optional HC_PING_URL and HC_API_KEY.
  * The token is repository-scoped: Actions write, Contents read, Issues write.
  * The actual stock checks still run against the official theatre sources in
- * GitHub Actions, including the normal Chrome confirmation for Golden Boy.
+ * GitHub Actions, using official public sources and ordinary browser checks.
  */
 const REPOSITORY = 'Scr169/sissi-ticket-watch';
 const WORKFLOW = 'watch.yml';
@@ -10,12 +10,13 @@ const ENDS_AT = '2027-01-10T00:00:00Z';
 const MAX_AGE_MS = 15 * 60 * 1000;
 const FEEDS = [
   {name:'Young Vic《Eurotrash》', path:'monitor-state.json', end:ENDS_AT},
-  {name:'Almeida《Golden Boy》', path:'golden-boy-state.json', end:'2026-11-01T00:00:00Z'},
   {name:'The Other Palace《An Oak Tree》Suranne Jones', path:'an-oak-tree-state.json', end:'2026-11-15T15:00:00Z'},
   {name:'@sohoplace《Virginia Woolf》仅当天', path:'virginia-woolf-state.json', end:'2026-12-20T00:00:00Z'},
   {name:'Bush Theatre《The Hungry Ghost》', path:'hungry-ghost-state.json', end:'2026-10-31T20:00:00Z'},
-  {name:'The Yard Theatre《Lear》Ian McKellen', path:'lear-state.json', end:'2027-01-02T19:30:00Z'}
+  {name:'The Yard Theatre《Lear》Ian McKellen', path:'lear-state.json', end:'2027-01-02T19:30:00Z'},
+  {name:'田馥甄《要去什麼地方》', path:'hebe-state.json', end:'2026-12-20T10:30:00Z'}
 ];
+// Golden Boy removed at user request on 1 November 2026 after its run ended.
 // Virginia Woolf resumed on 22 October, strictly London today only.
 // JCS is NOT an active feed: two ordinary cloud Chrome runs were rejected by
 // the official site ("We couldn't verify your browser"). Its workflow job is
