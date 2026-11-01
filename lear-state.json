@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-01T00:27:29.431263+00:00",
-  "last_run_id": "41256811219",
-  "last_source_read_at": "2026-11-01T00:27:29.431263+00:00",
+  "last_attempt_at": "2026-11-01T00:32:28.031593+00:00",
+  "last_run_id": "41257176682",
+  "last_source_read_at": "2026-11-01T00:32:28.031593+00:00",
   "candidate_notified_keys": [],
   "current_candidate_count": 0,
   "status": "sold_out",
@@ -10,8 +10,8 @@
   "failure_notice_sent": false,
   "last_error": null,
   "performance_count": 46,
-  "last_checked_at": "2026-11-01T00:27:30.791753+00:00",
-  "check_count": 858,
+  "last_checked_at": "2026-11-01T00:32:29.260962+00:00",
+  "check_count": 859,
   "last_heartbeat": "2026-10-29T02:07:35.644689+00:00",
-  "last_state_change": "2026-11-01T00:27:29.431263+00:00"
+  "last_state_change": "2026-11-01T00:32:28.031593+00:00"
 }
