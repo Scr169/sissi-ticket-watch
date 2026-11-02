@@ -9,6 +9,10 @@ on:
         description: 'Send one clearly labelled setup test notification'
         type: boolean
         default: false
+      hebe_probe:
+        description: 'Manual diagnostic only: Ticket Plus blocks cloud public reads; Hebe is not active'
+        type: boolean
+        default: false
       jcs_probe:
         description: 'Manual diagnostic only: LW currently rejects the cloud browser; not an active ticket monitor'
         type: boolean
@@ -65,8 +69,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: python3 yard_lear.py
-      - name: Check Hebe Tien Ticket Plus general sale
-        if: ${{ !cancelled() }}
+      - name: Diagnose Hebe Ticket Plus cloud access (not active)
+        if: ${{ !cancelled() && inputs.hebe_probe == true }}
         env:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
