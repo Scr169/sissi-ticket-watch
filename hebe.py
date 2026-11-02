@@ -193,7 +193,7 @@ class PublicBrowser(Browser):
         self.call(f"/session/{self.session}/url", "POST", {"url": url})
         for _ in range(15):
             page = self.call(f"/session/{self.session}/execute/sync", "POST", {
-                "script": "return {url:location.href, text:document.body?.innerText || '', ready:document.readyState};", "args": []})
+                "script": "return {url:location.href, text:document.querySelector('pre')?.innerText || document.body?.innerText || '', ready:document.readyState};", "args": []})
             if page.get("url") != url:
                 raise monitor.MonitorError("Ticket Plus public source redirected; no verified stock")
             text = page.get("text", "").strip()
@@ -201,7 +201,7 @@ class PublicBrowser(Browser):
                 try:
                     return json.loads(text)
                 except ValueError as exc:
-                    raise monitor.MonitorError("Ticket Plus refused ordinary cloud Chrome or returned non-JSON; no verified stock") from exc
+                    raise monitor.MonitorError("Ticket Plus ordinary cloud Chrome returned non-JSON; no verified stock. Public response: " + text[:180].replace("\n", " ")) from exc
             time.sleep(1)
         raise monitor.MonitorError("Ticket Plus public source did not load in ordinary cloud Chrome")
 
