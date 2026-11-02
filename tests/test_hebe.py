@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 import unittest
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 import hebe
 import monitor
@@ -34,6 +35,24 @@ def confirm(f):
 
 
 class HebeTests(unittest.TestCase):
+    def test_http_403_checks_same_public_source_once_in_ordinary_chrome(self):
+        fallback={'total':6,'available':[],'source':'official_test'}
+        with patch.object(hebe,'read_source',side_effect=[HTTPError(hebe.SHOW,403,'Forbidden',None,None),fallback]) as read, patch.object(hebe,'PublicBrowser') as browser:
+            result=hebe.observe(NOW)
+        self.assertEqual(result['source'],'official_test_ordinary_chrome')
+        self.assertEqual(read.call_count,2)
+        self.assertEqual(read.call_args.args[2],browser.return_value.__enter__.return_value.read_json)
+
+    def test_chrome_refusal_remains_failure_without_another_transport(self):
+        with patch.object(hebe,'read_source',side_effect=[HTTPError(hebe.SHOW,403,'Forbidden',None,None),monitor.MonitorError('Chrome refused')]) as read, patch.object(hebe,'PublicBrowser'):
+            with self.assertRaisesRegex(monitor.MonitorError,'Chrome refused'): hebe.observe(NOW)
+        self.assertEqual(read.call_count,2)
+
+    def test_other_http_errors_are_not_retried_in_a_browser(self):
+        with patch.object(hebe,'read_source',side_effect=HTTPError(hebe.SHOW,503,'Unavailable',None,None)), patch.object(hebe,'PublicBrowser') as browser:
+            with self.assertRaises(HTTPError): hebe.observe(NOW)
+        browser.assert_not_called()
+
     def test_actual_six_sold_out_rows_match(self):
         self.assertEqual(parse(FIXTURE), {'total':6,'candidates':[]})
 
