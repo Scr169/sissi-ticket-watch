@@ -293,4 +293,6 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    state = run()
+    if state is not None and state.get("status") == "unknown":
+        raise SystemExit(1)

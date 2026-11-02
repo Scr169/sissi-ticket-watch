@@ -2,7 +2,7 @@
 
 仓库：[Scr169/sissi-ticket-watch](https://github.com/Scr169/sissi-ticket-watch)。
 
-正式监控 **Eurotrash、An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）、The Hungry Ghost（已结束）、Lear（Ian McKellen）、田馥甄《要去什麼地方》** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
+正式监控 **Eurotrash、An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）、The Hungry Ghost（已结束）、Lear（Ian McKellen）** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
 
 ## 独立调度与停跑告警
 
@@ -22,7 +22,7 @@
 | Who’s Afraid of Virginia Woolf?（仅当天） | @sohoplace官方日历，只筛选Europe/London今天尚未开演的场次；正向信号打开当天官方nLiven票页确认 | 2026-12-19；每天午夜自动切换日期 | virginia-woolf-state.json |
 | The Hungry Ghost | Bush Theatre官方Spektrix Studio公开场次与库存；空价格带另查明确普通票数，正向信号核对排除专属票的普通库存 | 2026-10-31 20:00最后一场开演 | hungry-ghost-state.json |
 | Lear（Ian McKellen） | The Yard官方Spektrix公开场次和普通库存，严格匹配LEAR和场馆，排除Lear: The Gala与专属锁座 | 2027-01-02 19:30最后一场开演 | lear-state.json |
-| 田馥甄《要去什麼地方》 | Ticket Plus远大一般贩售页对应公开资料和实时场次状态，开放后核对普通全票与票区明确库存 | 2026-12-20 10:30（台北18:30）；全部6场 | hebe-state.json |
+| 田馥甄《要去什麼地方》（未启用） | 本机公开读取成功；GitHub云端HTTP返回403/CloudFront，普通Chrome完整页面也未读到六场有效状态；仅保留手动诊断，排除正式心跳 | 需求范围：台北2026-12-12至12-20全部6场 | hebe-state.json（unknown） |
 | JCS On-Stage Standing（未启用） | 普通本地浏览器可打开舞台票区；两次GitHub云端Chrome被官网拒绝验证，不能判断库存。仅保留手动诊断，不参加正式心跳 | 需求范围：2026-10-31及之前 | jcs-on-stage-state.json（unknown） |
 
 Eurotrash 官网曾展示 58 项，公开 API 返回 55 场。未返回项包括 Press Night 和 12 月 2 日两场，后两场原因未确认；尚未验证与官网全部场次完全一致。每次重新读取公开列表，不能承诺未公开场次的库存覆盖。
@@ -56,7 +56,7 @@ Golden Boy 官方日历表单与脚本使用 WordPress event 11278，官方售�
 
 运行 python3 -m unittest discover -s tests -v，以及 node --test tests/test_scheduler.cjs。
 
-82 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。13 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。
+87 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。13 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。
 
 Bush《The Hungry Ghost》于2026-10-29新增，任意未来日期和公开票价，截止10月31日20:00。官网四场日期时间与官方API逐一匹配。29日20:00的availability为空价格带，必须另查instance status的明确available值，不能以空列表当零库存。标准官网列价£25，退票实际价格未由库存证实则仍写未知。
 
@@ -89,3 +89,9 @@ The Yard《Lear》于2026-10-29新增，任意未来日期和公开票价。39�
 onsale对应真实场次购票按钮，先发余票待核实提醒。随后仅查询公开全票与票区状态：排除隐藏、锁定、身障/陪同及资格限定票；在有效销售窗口内，有明确普通库存才发确认。缺少count不能视作0，也不能宣称有票；不登录、不排队、不调用reserve或order。邮件明确台北时间UTC+8与新台币NT$，购票的实名资料及个人资格由用户自行核对。
 
 Golden Boy已从工作流、测试通知选项、私有Google活跃列表移除。保留历史源文件和测试，因为现有Woolf/JCS共用其中的浏览器工具；不再执行Golden Boy查票。
+
+### 田馥甄真实云端阻塞（2026-11-02）
+
+不能把已写好代码或绿色作业称为已启用。真实运行41369774231的公开HTTP请求返回403；普通Chrome直接读取相同公开资料在41370320472得到CloudFront拒绝响应；41370759313改为正常加载完整官方应用，仍未能在35秒内得到六场有效状态。未登录、未复制cookie、未使用代理、未改指纹、未解验证码。当前状态unknown，不能当售罄。
+
+因此田馥甄**未启用**：只保留默认关闭的hebe_probe手动诊断，移出私有Google健康列表，停止自动访问。用户未要求恢复本地Codex监控，仍不创建。Golden Boy已移除。现有Eurotrash、Suranne指定场、Woolf当天、Lear四项已于2026-11-02 01:07:42 UTC实读并验证独立健康心跳；Bush/JCS按原截止或暂停状态处理。Hebe异常提醒已按连续3次失败规则发送一次，它不是放票提醒。
