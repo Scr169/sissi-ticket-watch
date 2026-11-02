@@ -6,10 +6,14 @@ the site's own public URL-ID conversion, then checked against the rendered
 calendar on 1 November 2026. No login, queue, reservation or purchase API.
 """
 from datetime import datetime
+import json
+import time
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
 import monitor
+from golden_boy import Browser
 
 TAIPEI = ZoneInfo("Asia/Taipei")
 EVENT = "af2bd66d8fe65d78963cbb5bdc85771c"
@@ -29,12 +33,12 @@ SESSIONS = {
 }
 
 
-def static(name):
-    return monitor.request_json(API + "/getS3?" + urlencode({"path": f"event/{EVENT}/{name}.json"}))
+def static(name, reader=monitor.request_json):
+    return reader(API + "/getS3?" + urlencode({"path": f"event/{EVENT}/{name}.json"}))
 
 
-def live(**identifiers):
-    return monitor.request_json(API + "/get?" + urlencode({k: ",".join(v) for k, v in identifiers.items()}))
+def live(reader=monitor.request_json, **identifiers):
+    return reader(API + "/get?" + urlencode({k: ",".join(v) for k, v in identifiers.items()}))
 
 
 def result(payload):
@@ -150,16 +154,16 @@ def confirm_stock(candidate, products, areas, payload, now):
     return dict(candidate, count=sum(a["count"] for a in confirmed.values()), areas=list(confirmed.values()))
 
 
-def observe(now, on_candidates=None):
-    event, sessions = static("event"), static("sessions")
-    parsed = parse_sessions(event, sessions, live(eventId=[CONFIG_EVENT],
+def read_source(now, on_candidates=None, reader=monitor.request_json):
+    event, sessions = static("event", reader), static("sessions", reader)
+    parsed = parse_sessions(event, sessions, live(reader=reader, eventId=[CONFIG_EVENT],
                             sessionId=[s[0] for s in SESSIONS.values()]), now)
     if on_candidates:
         on_candidates(parsed["candidates"])
     available = []
     if parsed["candidates"]:
-        products = unique(static("products").get("products"), "productId")
-        areas = unique(static("ticketAreas").get("ticketAreas"), "ticketAreaId")
+        products = unique(static("products", reader).get("products"), "productId")
+        areas = unique(static("ticketAreas", reader).get("ticketAreas"), "ticketAreaId")
         for candidate in parsed["candidates"]:
             ordinary = [p for p in products.values() if p.get("sessionId") == candidate["public_id"] and
                         p.get("name") == "全票" and p.get("hidden") is False]
@@ -167,13 +171,52 @@ def observe(now, on_candidates=None):
                     areas[p["ticketAreaId"]].get("sessionId") != candidate["public_id"] or
                     areas[p["ticketAreaId"]].get("hidden") is not False for p in ordinary):
                 raise monitor.MonitorError("Missing public ordinary Hebe ticket metadata")
-            stock = live(productId=[p["productId"] for p in ordinary],
+            stock = live(reader=reader, productId=[p["productId"] for p in ordinary],
                          ticketAreaId=sorted({p["ticketAreaId"] for p in ordinary}))
             confirmed = confirm_stock(candidate, ordinary, areas, stock, now)
             if confirmed:
                 available.append(confirmed)
     return {"total": parsed["total"], "available": available,
             "source": "official_ticketplus_hebe_general_sale_six_sessions_and_public_stock"}
+
+
+class PublicBrowser(Browser):
+    """Ordinary fresh Chrome, with no imported cookies or fingerprint changes.
+
+    Navigate directly to the same public JSON URL, then read its rendered
+    body. No login, CAPTCHA interaction, queue, proxy or security bypass.
+    If Chrome is also refused, fail rather than trying another transport.
+    """
+    def read_json(self, url):
+        if not url.startswith(API + "/get"):
+            raise monitor.MonitorError("Unexpected Ticket Plus public source URL")
+        self.call(f"/session/{self.session}/url", "POST", {"url": url})
+        for _ in range(15):
+            page = self.call(f"/session/{self.session}/execute/sync", "POST", {
+                "script": "return {url:location.href, text:document.body?.innerText || '', ready:document.readyState};", "args": []})
+            if page.get("url") != url:
+                raise monitor.MonitorError("Ticket Plus public source redirected; no verified stock")
+            text = page.get("text", "").strip()
+            if text:
+                try:
+                    return json.loads(text)
+                except ValueError as exc:
+                    raise monitor.MonitorError("Ticket Plus refused ordinary cloud Chrome or returned non-JSON; no verified stock") from exc
+            time.sleep(1)
+        raise monitor.MonitorError("Ticket Plus public source did not load in ordinary cloud Chrome")
+
+
+def observe(now, on_candidates=None):
+    try:
+        return read_source(now, on_candidates)
+    except HTTPError as exc:
+        if exc.code != 403:
+            raise
+        print("Public HTTP reader received 403; checking the same public pages once with ordinary fresh Chrome.")
+        with PublicBrowser() as browser:
+            observation = read_source(now, on_candidates, browser.read_json)
+        observation["source"] += "_ordinary_chrome"
+        return observation
 
 
 def candidate_body(name, items, now):
