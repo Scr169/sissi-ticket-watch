@@ -35,18 +35,37 @@ def confirm(f):
 
 
 class HebeTests(unittest.TestCase):
-    def test_http_403_checks_same_public_source_once_in_ordinary_chrome(self):
-        fallback={'total':6,'available':[],'source':'official_test'}
-        with patch.object(hebe,'read_source',side_effect=[HTTPError(hebe.SHOW,403,'Forbidden',None,None),fallback]) as read, patch.object(hebe,'PublicBrowser') as browser:
+    def test_http_403_checks_full_official_application_once(self):
+        page={'url':hebe.SHOW,'heading':hebe.TITLE,'rows':[{'text':hebe.TITLE+f'（12/{int(day[-2:])}場次） '+day+' '+time+' 台北小巨蛋 銷售一空','buttons':[]} for _,day,time in hebe.SESSIONS.values()]}
+        with patch.object(hebe,'read_source',side_effect=HTTPError(hebe.SHOW,403,'Forbidden',None,None)) as read, patch.object(hebe,'PublicBrowser') as browser:
+            browser.return_value.__enter__.return_value.read_calendar.return_value=page
             result=hebe.observe(NOW)
-        self.assertEqual(result['source'],'official_test_ordinary_chrome')
-        self.assertEqual(read.call_count,2)
-        self.assertEqual(read.call_args.args[2],browser.return_value.__enter__.return_value.read_json)
+        self.assertEqual(result['total'],6)
+        self.assertEqual(result['available'],[])
+        self.assertEqual(read.call_count,1)
 
     def test_chrome_refusal_remains_failure_without_another_transport(self):
-        with patch.object(hebe,'read_source',side_effect=[HTTPError(hebe.SHOW,403,'Forbidden',None,None),monitor.MonitorError('Chrome refused')]) as read, patch.object(hebe,'PublicBrowser'):
+        with patch.object(hebe,'read_source',side_effect=HTTPError(hebe.SHOW,403,'Forbidden',None,None)), patch.object(hebe,'PublicBrowser') as browser:
+            browser.return_value.__enter__.return_value.read_calendar.side_effect=monitor.MonitorError('Chrome refused')
             with self.assertRaisesRegex(monitor.MonitorError,'Chrome refused'): hebe.observe(NOW)
-        self.assertEqual(read.call_count,2)
+
+    def test_rendered_partial_or_duplicate_calendar_is_failure(self):
+        page={'url':hebe.SHOW,'heading':hebe.TITLE,'rows':[{'text':hebe.TITLE+f'（12/{int(day[-2:])}場次） '+day+' '+time+' 台北小巨蛋 銷售一空','buttons':[]} for _,day,time in hebe.SESSIONS.values()]}
+        bad=copy.deepcopy(page);bad['rows'][-1]=bad['rows'][0]
+        with self.assertRaises(monitor.MonitorError):hebe.parse_rendered_calendar(bad,NOW)
+        bad=copy.deepcopy(page);bad['rows'].pop()
+        with self.assertRaises(monitor.MonitorError):hebe.parse_rendered_calendar(bad,NOW)
+
+    def test_rendered_booking_signal_is_not_confirmed_stock(self):
+        page={'url':hebe.SHOW,'heading':hebe.TITLE,'rows':[{'text':hebe.TITLE+f'（12/{int(day[-2:])}場次） '+day+' '+time+' 台北小巨蛋 銷售一空','buttons':[]} for _,day,time in hebe.SESSIONS.values()]}
+        page['rows'][0]['text']=page['rows'][0]['text'].replace('銷售一空','立即購買')
+        page['rows'][0]['buttons']=[{'text':'立即購買'}]
+        seen=[]
+        with patch.object(hebe,'read_source',side_effect=HTTPError(hebe.SHOW,403,'Forbidden',None,None)),patch.object(hebe,'PublicBrowser') as browser:
+            browser.return_value.__enter__.return_value.read_calendar.return_value=page
+            with self.assertRaisesRegex(monitor.MonitorError,'stock remains unverified'):hebe.observe(NOW,on_candidates=lambda c:seen.extend(c))
+        self.assertEqual(len(seen),1)
+        self.assertNotIn('count',seen[0])
 
     def test_other_http_errors_are_not_retried_in_a_browser(self):
         with patch.object(hebe,'read_source',side_effect=HTTPError(hebe.SHOW,503,'Unavailable',None,None)), patch.object(hebe,'PublicBrowser') as browser:
