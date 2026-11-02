@@ -7,6 +7,7 @@ calendar on 1 November 2026. No login, queue, reservation or purchase API.
 """
 from datetime import datetime
 import json
+import re
 import time
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -205,6 +206,51 @@ class PublicBrowser(Browser):
             time.sleep(1)
         raise monitor.MonitorError("Ticket Plus public source did not load in ordinary cloud Chrome")
 
+    def read_calendar(self):
+        self.call(f"/session/{self.session}/url", "POST", {"url": SHOW})
+        for _ in range(35):
+            page = self.call(f"/session/{self.session}/execute/sync", "POST", {
+                "script": """return {url:location.href, heading:document.querySelector('h1')?.innerText.trim() || '',
+                text:document.body?.innerText.slice(0,4000) || '',
+                rows:Array.from(document.querySelectorAll('#buyTicket .sesstion-item')).map(e=>({text:e.innerText,
+                buttons:Array.from(e.querySelectorAll('button,a')).filter(b=>!b.disabled && b.getAttribute('aria-disabled')!=='true')
+                .map(b=>({text:b.innerText.trim(),href:b.getAttribute('href')}))}))};""", "args": []})
+            if len(page.get("rows", [])) == 6 and all("銷售一空" in r["text"] or r.get("buttons") for r in page["rows"]):
+                return page
+            if re.search(r"captcha|verify.{0,20}(human|browser)|access denied|request could not be satisfied|403 ERROR",page.get("text", ""),re.I):
+                raise monitor.MonitorError("Ticket Plus official page refused ordinary cloud Chrome; no verification bypass attempted")
+            time.sleep(1)
+        raise monitor.MonitorError("Ticket Plus official calendar did not load six verified session rows in ordinary cloud Chrome")
+
+
+def parse_rendered_calendar(page, now):
+    if page.get("url") != SHOW or page.get("heading") != TITLE or len(page.get("rows", [])) != 6:
+        raise monitor.MonitorError("Wrong or incomplete rendered Hebe general-sale page")
+    expected = {s[1]: (p, s) for p,s in SESSIONS.items()}
+    seen, candidates, total = set(), [], 0
+    for row in page["rows"]:
+        text = row.get("text", "")
+        days = re.findall(r"2026-12-\d{2}", text)
+        times = re.findall(r"\b\d{2}:\d{2}\b", text)
+        if len(days) != 1 or days[0] not in expected or days[0] in seen or len(times) != 1:
+            raise monitor.MonitorError("Invalid or duplicate rendered Hebe performance date")
+        day = days[0];seen.add(day)
+        public_id, (identifier, _, time) = expected[day]
+        if TITLE + f"（12/{int(day[-2:])}場次）" not in text or "台北小巨蛋" not in text or times[0] != time:
+            raise monitor.MonitorError("Rendered Hebe title, venue or performance time changed")
+        start = datetime.fromisoformat(day + "T" + time).replace(tzinfo=TAIPEI)
+        if start <= now:
+            continue
+        total += 1
+        buy = [b for b in row.get("buttons", []) if b.get("text") == "立即購買"]
+        if "銷售一空" in text and not buy:
+            continue
+        if len(buy) != 1 or "銷售一空" in text:
+            raise monitor.MonitorError("Rendered Hebe status is neither explicit sold-out nor enabled booking")
+        candidates.append({"key":start.isoformat()+"|"+SHOW+"|"+identifier,"when":day+" "+time,
+                           "url":SHOW+"#buyTicket","public_id":public_id,"session_id":identifier})
+    return {"total":total,"candidates":candidates}
+
 
 def observe(now, on_candidates=None):
     try:
@@ -212,11 +258,14 @@ def observe(now, on_candidates=None):
     except HTTPError as exc:
         if exc.code != 403:
             raise
-        print("Public HTTP reader received 403; checking the same public pages once with ordinary fresh Chrome.")
+        print("Public HTTP reader received 403; checking the full official application once with ordinary fresh Chrome.")
         with PublicBrowser() as browser:
-            observation = read_source(now, on_candidates, browser.read_json)
-        observation["source"] += "_ordinary_chrome"
-        return observation
+            parsed = parse_rendered_calendar(browser.read_calendar(), now)
+        if on_candidates:
+            on_candidates(parsed["candidates"])
+        if parsed["candidates"]:
+            raise monitor.MonitorError("Hebe official booking entry reopened; early alert sent, but ordinary stock remains unverified without public count access")
+        return {"total":parsed["total"],"available":[],"source":"official_ticketplus_hebe_rendered_general_sale_calendar_ordinary_chrome"}
 
 
 def candidate_body(name, items, now):
