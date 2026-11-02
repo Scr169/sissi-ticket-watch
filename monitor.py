@@ -230,10 +230,12 @@ def run(*, config=None, observer=None, github=None):
                     "virginia-woolf": "Virginia Woolf（仅当天）",
                     "hungry-ghost": "The Hungry Ghost",
                     "lear": "Lear（Ian McKellen）",
+                    "hebe": "田馥甄《要去什麼地方》",
                     "jcs-on-stage": "Jesus Christ Superstar（£25舞台站票）"}.get(prefix, name)
     show_url = config.get("url", SHOW)
     end = config.get("end", END)
     format_alert = config.get("format_alert", alert_body)
+    format_candidate = config.get("format_candidate", candidate_body)
     now = datetime.now(timezone.utc)
     if now >= end:
         print(name + " has finished. No further ticket checks or alerts.")
@@ -257,7 +259,7 @@ def run(*, config=None, observer=None, github=None):
         if fresh:
             episode = state.get("candidate_episode", 0) + 1
             fingerprint = hashlib.sha256(json.dumps([i["key"] for i in fresh], sort_keys=True).encode()).hexdigest()[:20]
-            url = gh.notify(subject_name + "｜购票入口变化，余票待核实", candidate_body(subject_name, fresh, now), prefix + "-candidate-" + str(episode) + "-" + fingerprint)
+            url = gh.notify(subject_name + "｜购票入口变化，余票待核实", format_candidate(subject_name, fresh, now), prefix + "-candidate-" + str(episode) + "-" + fingerprint)
             print("Early booking signal acknowledged:", url)
             state["candidate_episode"] = episode
         state["candidate_notified_keys"] = [item["key"] for item in candidates]

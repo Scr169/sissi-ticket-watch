@@ -9,10 +9,6 @@ on:
         description: 'Send one clearly labelled setup test notification'
         type: boolean
         default: false
-      golden_boy_test_notification:
-        description: 'Test Golden Boy email and official booking-page connectivity'
-        type: boolean
-        default: false
       jcs_probe:
         description: 'Manual diagnostic only: LW currently rejects the cloud browser; not an active ticket monitor'
         type: boolean
@@ -45,14 +41,6 @@ jobs:
           NOTIFY_USER: ${{ github.repository_owner }}
           TEST_NOTIFICATION: ${{ inputs.test_notification }}
         run: python3 monitor.py
-      - name: Check Almeida Golden Boy official availability
-        if: ${{ !cancelled() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NOTIFY_USER: ${{ github.repository_owner }}
-          TEST_NOTIFICATION: ${{ inputs.golden_boy_test_notification }}
-          VERIFY_BOOKING_PROBE: ${{ inputs.golden_boy_test_notification }}
-        run: xvfb-run -a python3 golden_boy.py
       - name: Check Suranne Jones exact An Oak Tree performance
         if: ${{ !cancelled() }}
         env:
@@ -77,6 +65,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: python3 yard_lear.py
+      - name: Check Hebe Tien Ticket Plus general sale
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTIFY_USER: ${{ github.repository_owner }}
+        run: python3 hebe.py
 
   jcs:
     # Separate job after the other shows: a slow LW booking site cannot

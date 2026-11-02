@@ -1,0 +1,205 @@
+{
+  "event": {
+    "event_id": "af2bd66d8fe65d78963cbb5bdc85771c",
+    "title": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會",
+    "location": "台北小巨蛋"
+  },
+  "sessions": {
+    "sessions": [
+      {
+        "eventId": "af2bd66d8fe65d78963cbb5bdc85771c",
+        "sessionId": "c2dea0f7d2826e50da58b304bdfd47ef",
+        "name": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會（12/12場次）",
+        "hidden": false,
+        "date": "2026-12-12 ~ 2026-12-12",
+        "time": "18:30 ~ 18:30",
+        "location": "台北小巨蛋"
+      },
+      {
+        "eventId": "af2bd66d8fe65d78963cbb5bdc85771c",
+        "sessionId": "85b4b97704223ce85e10b10e07575968",
+        "name": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會（12/13場次）",
+        "hidden": false,
+        "date": "2026-12-13 ~ 2026-12-13",
+        "time": "18:30 ~ 18:30",
+        "location": "台北小巨蛋"
+      },
+      {
+        "eventId": "af2bd66d8fe65d78963cbb5bdc85771c",
+        "sessionId": "95f23e400e61052b487387acfb7b1a89",
+        "name": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會（12/15場次）",
+        "hidden": false,
+        "date": "2026-12-15 ~ 2026-12-15",
+        "time": "19:30 ~ 19:30",
+        "location": "台北小巨蛋"
+      },
+      {
+        "eventId": "af2bd66d8fe65d78963cbb5bdc85771c",
+        "sessionId": "99c520edfa9ddb81ad598b3fad1687cc",
+        "name": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會（12/18場次）",
+        "hidden": false,
+        "date": "2026-12-18 ~ 2026-12-18",
+        "time": "19:30 ~ 19:30",
+        "location": "台北小巨蛋"
+      },
+      {
+        "eventId": "af2bd66d8fe65d78963cbb5bdc85771c",
+        "sessionId": "d042e17d71c0dc8bb3e43f08ecbc50b6",
+        "name": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會（12/19場次）",
+        "hidden": false,
+        "date": "2026-12-19 ~ 2026-12-19",
+        "time": "18:30 ~ 18:30",
+        "location": "台北小巨蛋"
+      },
+      {
+        "eventId": "af2bd66d8fe65d78963cbb5bdc85771c",
+        "sessionId": "5f56e43c4c02a92b92a701ad89f88784",
+        "name": "田馥甄 要去什麼地方 2026台北小巨蛋演唱會（12/20場次）",
+        "hidden": false,
+        "date": "2026-12-20 ~ 2026-12-20",
+        "time": "18:30 ~ 18:30",
+        "location": "台北小巨蛋"
+      }
+    ]
+  },
+  "live": {
+    "errCode": "00",
+    "errMsg": "",
+    "errDetail": "",
+    "result": {
+      "event": [
+        {
+          "hidden": false,
+          "id": "e000001534",
+          "lock": false,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "status": "soldout"
+        }
+      ],
+      "session": [
+        {
+          "hidden": false,
+          "id": "s000002291",
+          "lock": null,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "sessionStart": "2026-12-18T00:00:00+08:00",
+          "status": "soldout"
+        },
+        {
+          "hidden": false,
+          "id": "s000002288",
+          "lock": null,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "sessionStart": "2026-12-12T00:00:00+08:00",
+          "status": "soldout"
+        },
+        {
+          "hidden": false,
+          "id": "s000002292",
+          "lock": null,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "sessionStart": "2026-12-19T00:00:00+08:00",
+          "status": "soldout"
+        },
+        {
+          "hidden": false,
+          "id": "s000002293",
+          "lock": null,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "sessionStart": "2026-12-20T00:00:00+08:00",
+          "status": "soldout"
+        },
+        {
+          "hidden": false,
+          "id": "s000002290",
+          "lock": null,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "sessionStart": "2026-12-15T00:00:00+08:00",
+          "status": "soldout"
+        },
+        {
+          "hidden": false,
+          "id": "s000002289",
+          "lock": null,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "sessionStart": "2026-12-13T00:00:00+08:00",
+          "status": "soldout"
+        }
+      ]
+    }
+  },
+  "stock": {
+    "errCode": "00",
+    "errMsg": "",
+    "errDetail": "",
+    "result": {
+      "product": [
+        {
+          "autoRelease": true,
+          "ccDiscount": [],
+          "coupon": [],
+          "createdAt": "2026-09-28T14:05:53+08:00",
+          "disabilitiesType": 0,
+          "eventId": "e000001534",
+          "exposeEnd": "2026-12-21T00:00:00+08:00",
+          "exposeStart": "2026-09-28T18:00:00+08:00",
+          "hidden": false,
+          "id": "p000017936",
+          "isProtected": false,
+          "lock": null,
+          "onlyConsecutive": true,
+          "price": 5200,
+          "productIbon": false,
+          "productIbonSaleEnd": null,
+          "productIbonSaleStart": null,
+          "productLimit": false,
+          "purchaseLimit": 4,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "seatAssignment": true,
+          "sessionId": "s000002288",
+          "sortedIndex": 1,
+          "status": "soldout",
+          "ticketAreaId": "a000010041",
+          "uncountable": false,
+          "unit": 1,
+          "updatedAt": "2026-10-30T11:17:43+08:00",
+          "userLimit": 4,
+          "welfare": 0
+        }
+      ],
+      "ticketArea": [
+        {
+          "createdAt": "2026-09-28T14:05:12+08:00",
+          "exposeEnd": "2026-12-21T00:00:00+08:00",
+          "exposeStart": "2026-09-28T18:00:00+08:00",
+          "hidden": false,
+          "id": "a000010041",
+          "isProtected": false,
+          "lock": null,
+          "price": 5200,
+          "saleEnd": "2026-10-27T15:45:00+08:00",
+          "saleStart": "2026-10-18T12:00:00+08:00",
+          "seatAssignment": true,
+          "sessionId": "s000002288",
+          "sortedIndex": 1,
+          "status": "soldout",
+          "ticketAreaIbon": false,
+          "ticketAreaIbonSaleEnd": null,
+          "ticketAreaIbonSaleStart": null,
+          "ticketAreaLimit": true,
+          "ticketAreaName": "特1區5200",
+          "updatedAt": "2026-10-30T11:17:33+08:00",
+          "userLimit": 4
+        }
+      ]
+    }
+  }
+}
