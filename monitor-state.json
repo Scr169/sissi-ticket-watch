@@ -3,9 +3,10 @@
   "consecutive_failures": 0,
   "last_error": null,
   "last_heartbeat": "2026-11-01T01:47:22.054908+00:00",
-  "last_state_change": "2026-11-03T17:20:23.182262+00:00",
+  "last_state_change": "2026-11-03T17:22:24.810176+00:00",
   "notified_keys": [
     "2026-11-25T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=50609&resize=true",
+    "2026-11-26T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=50610&resize=true",
     "2026-12-09T14:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51206&resize=true",
     "2026-12-28T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95001&resize=true",
     "2026-12-30T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51409&resize=true",
@@ -13,19 +14,20 @@
   ],
   "failure_notice_sent": false,
   "performance_count": 57,
-  "last_attempt_at": "2026-11-03T17:20:23.182262+00:00",
-  "last_run_id": "41683240938",
-  "last_source_read_at": "2026-11-03T17:20:23.182262+00:00",
+  "last_attempt_at": "2026-11-03T17:22:24.810176+00:00",
+  "last_run_id": "41683585928",
+  "last_source_read_at": "2026-11-03T17:22:24.810176+00:00",
   "candidate_notified_keys": [
     "2026-11-25T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=50609&resize=true",
+    "2026-11-26T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=50610&resize=true",
     "2026-12-09T14:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51206&resize=true",
     "2026-12-28T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95001&resize=true",
     "2026-12-30T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51409&resize=true",
     "2027-01-02T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95201&resize=true"
   ],
-  "current_candidate_count": 5,
-  "last_checked_at": "2026-11-03T17:20:27.062809+00:00",
-  "check_count": 4445,
-  "candidate_episode": 47,
-  "episode": 46
+  "current_candidate_count": 6,
+  "last_checked_at": "2026-11-03T17:22:31.779943+00:00",
+  "check_count": 4446,
+  "candidate_episode": 48,
+  "episode": 47
 }
