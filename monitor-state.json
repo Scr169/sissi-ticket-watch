@@ -3,29 +3,26 @@
   "consecutive_failures": 0,
   "last_error": null,
   "last_heartbeat": "2026-11-01T01:47:22.054908+00:00",
-  "last_state_change": "2026-11-03T16:27:22.563243+00:00",
+  "last_state_change": "2026-11-03T16:32:24.119985+00:00",
   "notified_keys": [
-    "2026-11-25T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=50609&resize=true",
     "2026-12-28T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95001&resize=true",
-    "2026-12-29T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51408&resize=true",
     "2026-12-30T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51409&resize=true",
     "2027-01-02T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95201&resize=true"
   ],
   "failure_notice_sent": false,
   "performance_count": 57,
-  "last_attempt_at": "2026-11-03T16:27:22.563243+00:00",
-  "last_run_id": "41674353455",
-  "last_source_read_at": "2026-11-03T16:27:22.563243+00:00",
+  "last_attempt_at": "2026-11-03T16:32:24.119985+00:00",
+  "last_run_id": "41675204978",
+  "last_source_read_at": "2026-11-03T16:32:24.119985+00:00",
   "candidate_notified_keys": [
     "2026-11-25T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=50609&resize=true",
     "2026-12-28T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95001&resize=true",
-    "2026-12-29T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51408&resize=true",
     "2026-12-30T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=51409&resize=true",
     "2027-01-02T19:30:00+00:00|https://book.youngvic.org/youngvic/website/ChooseSeats.aspx?EventInstanceId=95201&resize=true"
   ],
-  "current_candidate_count": 5,
-  "last_checked_at": "2026-11-03T16:27:25.664707+00:00",
-  "check_count": 4434,
+  "current_candidate_count": 4,
+  "last_checked_at": "2026-11-03T16:32:27.733632+00:00",
+  "check_count": 4435,
   "candidate_episode": 44,
   "episode": 43
 }
