@@ -2,7 +2,7 @@
 
 仓库：[Scr169/sissi-ticket-watch](https://github.com/Scr169/sissi-ticket-watch)。
 
-正式监控 **Eurotrash、An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）、The Hungry Ghost（已结束）、Lear（Ian McKellen）** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
+正式监控 **An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）、The Hungry Ghost（已结束）、Lear（Ian McKellen）** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
 
 ## 独立调度与停跑告警
 
@@ -16,7 +16,7 @@
 
 | 剧目 | 官方来源 | 监控至（伦敦时间） | 状态文件 |
 | --- | --- | --- | --- |
-| Eurotrash | Young Vic 官方 Spektrix public Web API；正向信号再次核对普通公开可买座位数 | 2027-01-09 演出结束 | monitor-state.json |
+| Eurotrash（用户已停止） | 2026-11-04按用户要求移除自动检查、测试通知入口和健康列表；独立启动monitor.py也不再查票，保留其他剧目共用函数 | 已停止，不再查票或提醒 | monitor-state.json（历史） |
 | Golden Boy（已移除） | 用户于2026-11-01要求停止；工作流和私有调度已移除，历史记录保留 | 已结束，不再检查或提醒 | golden-boy-state.json（历史） |
 | An Oak Tree / Suranne Jones | The Other Palace官方Spektrix公开票源，仅240703 / 2026-11-15 15:00，正向信号再次排除专属锁座 | 2026-11-15 15:00开演 | an-oak-tree-state.json |
 | Who’s Afraid of Virginia Woolf?（仅当天） | @sohoplace官方日历，只筛选Europe/London今天尚未开演的场次；正向信号打开当天官方nLiven票页确认 | 2026-12-19；每天午夜自动切换日期 | virginia-woolf-state.json |
@@ -95,3 +95,7 @@ Golden Boy已从工作流、测试通知选项、私有Google活跃列表移除�
 不能把已写好代码或绿色作业称为已启用。真实运行41369774231的公开HTTP请求返回403；普通Chrome直接读取相同公开资料在41370320472得到CloudFront拒绝响应；41370759313改为正常加载完整官方应用，仍未能在35秒内得到六场有效状态。未登录、未复制cookie、未使用代理、未改指纹、未解验证码。当前状态unknown，不能当售罄。
 
 因此田馥甄**未启用**：只保留默认关闭的hebe_probe手动诊断，移出私有Google健康列表，停止自动访问。用户未要求恢复本地Codex监控，仍不创建。Golden Boy已移除。现有Eurotrash、Suranne指定场、Woolf当天、Lear四项已于2026-11-02 01:07:42 UTC实读并验证独立健康心跳；Bush/JCS按原截止或暂停状态处理。Hebe异常提醒已按连续3次失败规则发送一次，它不是放票提醒。
+
+## Eurotrash停止（2026-11-04）
+
+用户要求停止Eurotrash。已从GitHub自动工作流、私有Google健康列表移除，并停用其独立运行入口和专属测试通知选项。本地旧Eurotrash任务维持PAUSED。保留历史记录和其他监控共用库。Suranne指定场、Virginia Woolf伦敦当天和Lear继续；原有其他暂停或结束项目不恢复。

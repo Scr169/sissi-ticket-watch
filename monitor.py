@@ -317,4 +317,4 @@ def run(*, config=None, observer=None, github=None):
 
 
 if __name__ == "__main__":
-    run()
+    print("Eurotrash monitoring was stopped by the user on 2026-11-04. No checks or alerts.")
