@@ -123,11 +123,13 @@ test('Lear is included in real-source health and cannot mask a stopped checker',
 });
 
 
-test('retired Golden Boy and unverified Hebe never block the working monitors',()=>{
+test('stopped Eurotrash, retired Golden Boy and unverified Hebe never block working monitors',()=>{
   const states=feeds(fresh);
+  states['monitor-state.json']={status:'unknown'};
   states['golden-boy-state.json']={status:'unknown'};
   states['hebe-state.json']={status:'unknown'};
   const f=fixture(states); f.run('watchdog');
+  assert.equal(f.calls.filter(c=>/contents\/monitor-state/.test(c.url)).length,0);
   assert.equal(f.calls.filter(c=>/contents\/golden-boy-state/.test(c.url)).length,0);
   assert.equal(f.calls.filter(c=>/contents\/hebe-state/.test(c.url)).length,0);
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,1);
