@@ -5,10 +5,6 @@ on:
     - cron: '2-59/5 * * * *'
   workflow_dispatch:
     inputs:
-      test_notification:
-        description: 'Send one clearly labelled setup test notification'
-        type: boolean
-        default: false
       hebe_probe:
         description: 'Manual diagnostic only: Ticket Plus blocks cloud public reads; Hebe is not active'
         type: boolean
@@ -39,12 +35,6 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -v
           node --test tests/test_scheduler.cjs
-      - name: Check official public Eurotrash ticket status
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NOTIFY_USER: ${{ github.repository_owner }}
-          TEST_NOTIFICATION: ${{ inputs.test_notification }}
-        run: python3 monitor.py
       - name: Check Suranne Jones exact An Oak Tree performance
         if: ${{ !cancelled() }}
         env:
