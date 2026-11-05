@@ -236,5 +236,7 @@ if __name__ == "__main__":
     if os.environ.get("RSC_DIAGNOSTIC") == "true":
         result = observe(datetime.now(monitor.LONDON))
         print(json.dumps(result, ensure_ascii=False))
-    else:
+    elif os.environ.get("RSC_ACTIVE") == "true":
         run()
+    else:
+        print("RSC is not active: ordinary cloud booking reads failed. Manual diagnostic only; no checks or alerts.")
