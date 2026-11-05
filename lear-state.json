@@ -1,21 +1,19 @@
 {
-  "last_attempt_at": "2026-11-05T13:17:26.408543+00:00",
-  "last_run_id": "42034433826",
-  "last_source_read_at": "2026-11-05T13:17:26.408543+00:00",
-  "candidate_notified_keys": [
-    "2026-12-26T14:30:00+00:00|https://tickets.theyardtheatre.co.uk/theyard/website/ChooseSeats.aspx?EventInstanceId=152273&resize=true"
-  ],
-  "current_candidate_count": 1,
-  "status": "unknown",
+  "last_attempt_at": "2026-11-05T13:22:26.268833+00:00",
+  "last_run_id": "42035158813",
+  "last_source_read_at": "2026-11-05T13:22:26.268833+00:00",
+  "candidate_notified_keys": [],
+  "current_candidate_count": 0,
+  "status": "sold_out",
   "notified_keys": [],
-  "consecutive_failures": 1,
+  "consecutive_failures": 0,
   "failure_notice_sent": false,
-  "last_error": "Lear status does not identify The Yard Theatre 2026",
+  "last_error": null,
   "performance_count": 46,
-  "last_checked_at": "2026-11-05T13:12:34.632840+00:00",
-  "check_count": 2162,
+  "last_checked_at": "2026-11-05T13:22:27.643128+00:00",
+  "check_count": 2163,
   "last_heartbeat": "2026-10-29T02:07:35.644689+00:00",
-  "last_state_change": "2026-11-05T13:17:26.408543+00:00",
+  "last_state_change": "2026-11-05T13:22:26.268833+00:00",
   "candidate_episode": 16,
   "failure_episode": 3
 }
