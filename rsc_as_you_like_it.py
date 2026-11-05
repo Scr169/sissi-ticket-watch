@@ -117,9 +117,11 @@ def confirm_booking(candidate, data):
         # companion, wheelchair, locked and selected seats; never use £18 min.
         match = re.fullmatch(r"#tn-syos-seat-map-icon-circle-([a-z])", seat.get("icon", ""))
         if (seat.get("disabled") is not False or seat.get("pressed") != "false"
-                or not match or match[1] not in prices or not re.match(r"^[A-Z]+\d+, £", seat.get("label", ""))
-                or re.search(r"wheelchair|companion|access|member|unavailable", seat.get("label", ""), re.I)):
+                or re.search(r"wheelchair|companion|access|member|unavailable", seat.get("label", ""), re.I)
+                or "wheelchair" in seat.get("icon", "")):
             continue
+        if not match or match[1] not in prices or not re.match(r"^[A-Z]+\d+, £", seat.get("label", "")):
+            raise monitor.MonitorError("RSC selectable seat has no verified ordinary Full Price; stock is unknown")
         seats.append({"seat": seat["label"].split(",", 1)[0], "price": prices[match[1]]})
     return dict(candidate, count=len(seats), seats=seats, confirmed=True) if seats else None
 
@@ -134,10 +136,35 @@ class RscBrowser(Browser):
             if ready(data):
                 return data
             time.sleep(1)
+        self.public_failure()
         raise monitor.MonitorError("RSC ordinary cloud browser did not load verified public data; no verification bypass")
 
+    def public_failure(self):
+        data = self.execute("return {title:document.title,text:(document.body?.innerText||'').slice(0,1200)};")
+        print("RSC public page at failure:", json.dumps(data, ensure_ascii=False))
+
     def calendar(self):
-        self.call(f"/session/{self.session}/url", "POST", {"url": CALENDAR})
+        # Follow the production's actual Book Tickets link, allowing the
+        # ordinary public waiting-room redirect. No imported queue tokens.
+        self.call(f"/session/{self.session}/url", "POST", {"url": SHOW})
+        links = []
+        for _ in range(20):
+            links = self.call(f"/session/{self.session}/elements", "POST", {"using": "css selector",
+                              "value": "#MainContainer_PlayHubHeader_PlayHubHeaderPlannerInfo_VenueList_TicketsLink_0"})
+            if links:
+                break
+            time.sleep(1)
+        if len(links) != 1:
+            self.public_failure()
+            raise monitor.MonitorError("RSC official production Book Tickets link did not load")
+        reject = self.call(f"/session/{self.session}/elements", "POST",
+                           {"using": "css selector", "value": "#onetrust-reject-all-handler"})
+        if reject:
+            element = reject[0]["element-6066-11e4-a52e-4f735466cecf"]
+            if self.call(f"/session/{self.session}/element/{element}/displayed"):
+                self.call(f"/session/{self.session}/element/{element}/click", "POST", {})
+        element = links[0]["element-6066-11e4-a52e-4f735466cecf"]
+        self.call(f"/session/{self.session}/element/{element}/click", "POST", {})
         return self.wait(CALENDAR_DOM, lambda d: bool(d.get("rows")))
 
     def booking_data(self):
