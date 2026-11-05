@@ -2,7 +2,7 @@
 
 仓库：[Scr169/sissi-ticket-watch](https://github.com/Scr169/sissi-ticket-watch)。
 
-正式监控 **An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）、The Hungry Ghost（已结束）、Lear（Ian McKellen）** 的官方票源。Virginia Woolf于2026-10-22按用户要求恢复为当天模式；JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
+正式监控 **An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）** 的官方票源。Lear于2026-11-05按用户要求停止；Eurotrash已停止，Golden Boy已移除，The Hungry Ghost已结束。RSC仍只保留11月6日及7日三场的手动诊断，成功核验云端读取前不启用。JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
 
 ## 独立调度与停跑告警
 
@@ -21,7 +21,7 @@
 | An Oak Tree / Suranne Jones | The Other Palace官方Spektrix公开票源，仅240703 / 2026-11-15 15:00，正向信号再次排除专属锁座 | 2026-11-15 15:00开演 | an-oak-tree-state.json |
 | Who’s Afraid of Virginia Woolf?（仅当天） | @sohoplace官方日历，只筛选Europe/London今天尚未开演的场次；正向信号打开当天官方nLiven票页确认 | 2026-12-19；每天午夜自动切换日期 | virginia-woolf-state.json |
 | The Hungry Ghost | Bush Theatre官方Spektrix Studio公开场次与库存；空价格带另查明确普通票数，正向信号核对排除专属票的普通库存 | 2026-10-31 20:00最后一场开演 | hungry-ghost-state.json |
-| Lear（Ian McKellen） | The Yard官方Spektrix公开场次和普通库存，严格匹配LEAR和场馆，排除Lear: The Gala与专属锁座 | 2027-01-02 19:30最后一场开演 | lear-state.json |
+| Lear（Ian McKellen，用户已停止） | 2026-11-05移除自动工作流和私有健康列表；独立启动yard_lear.py也不查票，历史记录保留 | 已停止，不再查票或提醒 | lear-state.json（历史） |
 | As You Like It（RSC，未启用） | 已在普通本机浏览器核对官网；两次GitHub云端普通Chrome未加载出有效列表，保留手动诊断rsc_probe，不参加正式调度/健康心跳 | 仅11月6日19:30、11月7日13:30及19:30；排除11月5日，11月7日19:30后结束 | rsc-as-you-like-it-state.json（尚未建立成功云端状态） |
 | 田馥甄《要去什麼地方》（未启用） | 本机公开读取成功；GitHub云端HTTP返回403/CloudFront，普通Chrome完整页面也未读到六场有效状态；仅保留手动诊断，排除正式心跳 | 需求范围：台北2026-12-12至12-20全部6场 | hebe-state.json（unknown） |
 | JCS On-Stage Standing（未启用） | 普通本地浏览器可打开舞台票区；两次GitHub云端Chrome被官网拒绝验证，不能判断库存。仅保留手动诊断，不参加正式心跳 | 需求范围：2026-10-31及之前 | jcs-on-stage-state.json（unknown） |

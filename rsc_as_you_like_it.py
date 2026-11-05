@@ -140,8 +140,22 @@ class RscBrowser(Browser):
         raise monitor.MonitorError("RSC ordinary cloud browser did not load verified public data; no verification bypass")
 
     def public_failure(self):
-        data = self.execute("return {title:document.title,text:(document.body?.innerText||'').slice(0,1200)};")
+        data = self.execute(r"""return {title:document.title,text:(document.body?.innerText||'').slice(0,1200),
+          path:location.origin+location.pathname,readyState:document.readyState,
+          incapsula:Boolean(document.querySelector('script[src*="_Incapsula_Resource"],iframe[src*="_Incapsula_Resource"]')),
+          frames:Array.from(document.querySelectorAll('iframe')).map(e=>({title:e.title,
+            path:(()=>{try{const u=new URL(e.src);return u.origin+u.pathname;}catch{return '';}})()}))};""")
         print("RSC public page at failure:", json.dumps(data, ensure_ascii=False))
+        # Read the public error frame without interacting with verification.
+        frames = self.call(f"/session/{self.session}/elements", "POST",
+                           {"using": "css selector", "value": "iframe"})
+        if len(frames) == 1:
+            try:
+                self.call(f"/session/{self.session}/frame", "POST", {"id": frames[0]})
+                detail = self.execute("return {title:document.title,text:(document.body?.innerText||'').slice(0,1200)};")
+                print("RSC public frame at failure:", json.dumps(detail, ensure_ascii=False))
+            finally:
+                self.call(f"/session/{self.session}/frame", "POST", {"id": None})
 
     def calendar(self):
         # Follow the production's actual Book Tickets link, allowing the

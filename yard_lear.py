@@ -130,4 +130,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    print("Lear monitoring was stopped by the user on 2026-11-05. No checks or alerts.")
