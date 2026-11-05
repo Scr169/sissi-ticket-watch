@@ -5,6 +5,10 @@ on:
     - cron: '2-59/5 * * * *'
   workflow_dispatch:
     inputs:
+      rsc_probe:
+        description: 'Verify RSC As You Like It November 6-7 in ordinary cloud Chrome before activation'
+        type: boolean
+        default: false
       hebe_probe:
         description: 'Manual diagnostic only: Ticket Plus blocks cloud public reads; Hebe is not active'
         type: boolean
@@ -59,6 +63,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: python3 yard_lear.py
+      - name: Verify RSC As You Like It November 6-7 cloud access
+        if: ${{ !cancelled() && inputs.rsc_probe == true }}
+        env:
+          RSC_DIAGNOSTIC: 'true'
+        run: xvfb-run -a python3 rsc_as_you_like_it.py
       - name: Diagnose Hebe Ticket Plus cloud access (not active)
         if: ${{ !cancelled() && inputs.hebe_probe == true }}
         env:
