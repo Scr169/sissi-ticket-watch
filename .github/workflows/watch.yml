@@ -57,12 +57,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: python3 hungry_ghost.py
-      - name: Check The Yard Lear Ian McKellen official availability
-        if: ${{ !cancelled() }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          NOTIFY_USER: ${{ github.repository_owner }}
-        run: python3 yard_lear.py
       - name: Diagnose RSC As You Like It November 6-7 (not active)
         if: ${{ !cancelled() && inputs.rsc_probe == true }}
         env:
