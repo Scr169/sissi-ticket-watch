@@ -22,7 +22,7 @@
 | Who’s Afraid of Virginia Woolf?（仅当天） | @sohoplace官方日历，只筛选Europe/London今天尚未开演的场次；正向信号打开当天官方nLiven票页确认 | 2026-12-19；每天午夜自动切换日期 | virginia-woolf-state.json |
 | The Hungry Ghost | Bush Theatre官方Spektrix Studio公开场次与库存；空价格带另查明确普通票数，正向信号核对排除专属票的普通库存 | 2026-10-31 20:00最后一场开演 | hungry-ghost-state.json |
 | Lear（Ian McKellen，用户已停止） | 2026-11-05移除自动工作流和私有健康列表；独立启动yard_lear.py也不查票，历史记录保留 | 已停止，不再查票或提醒 | lear-state.json（历史） |
-| As You Like It（RSC，未启用） | 已在普通本机浏览器核对官网；两次GitHub云端普通Chrome未加载出有效列表，保留手动诊断rsc_probe，不参加正式调度/健康心跳 | 仅11月6日19:30、11月7日13:30及19:30；排除11月5日，11月7日19:30后结束 | rsc-as-you-like-it-state.json（尚未建立成功云端状态） |
+| As You Like It（RSC，未启用） | 普通本机浏览器可读；19:39云端重试确认官方售票页由Imperva要求真人验证码。未解验证码或绕过，保留手动诊断rsc_probe，不参加正式调度/健康心跳 | 仅11月6日19:30、11月7日13:30及19:30；排除11月5日，11月7日19:30后结束 | rsc-as-you-like-it-state.json（尚未建立成功云端状态） |
 | 田馥甄《要去什麼地方》（未启用） | 本机公开读取成功；GitHub云端HTTP返回403/CloudFront，普通Chrome完整页面也未读到六场有效状态；仅保留手动诊断，排除正式心跳 | 需求范围：台北2026-12-12至12-20全部6场 | hebe-state.json（unknown） |
 | JCS On-Stage Standing（未启用） | 普通本地浏览器可打开舞台票区；两次GitHub云端Chrome被官网拒绝验证，不能判断库存。仅保留手动诊断，不参加正式心跳 | 需求范围：2026-10-31及之前 | jcs-on-stage-state.json（unknown） |
 
@@ -60,6 +60,8 @@ Golden Boy 官方日历表单与脚本使用 WordPress event 11278，官方售�
 93 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。13 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。
 
 RSC于2026-11-05申请接入；用户随后排除当天。production 62239剩余62530 / 11月6日19:30、62573 / 11月7日13:30、62531 / 11月7日19:30。读取器已实现完整场次覆盖、普通Full Price座位核验及不选座的票区查看；£18无障碍价格不作普通票价。云端直接日历和官网Book Tickets正常导航两次试读均未加载有效列表，因此当前未启用。RSC_DIAGNOSTIC=true仅手动试读；独立启动也默认关闭，须另行验证成功后才可设置RSC_ACTIVE=true并接入正式工作流及私有FEEDS。未创建任何新的本地/Codex定时任务。
+
+2026-11-05 19:39再次从官网正常入口在GitHub普通Chrome读取，外层为空白，但公开iframe明确显示Imperva的“Additional security check is required”。本轮只读取错误页面，没有点击验证码、导入cookie或更改浏览器指纹。RSC仍未启用；本机手动新加载官网的11月6日/7日三场均显示Sold Out。Lear已经按用户要求停止，正式监控只剩Suranne和Virginia Woolf当天。
 
 Bush《The Hungry Ghost》于2026-10-29新增，任意未来日期和公开票价，截止10月31日20:00。官网四场日期时间与官方API逐一匹配。29日20:00的availability为空价格带，必须另查instance status的明确available值，不能以空列表当零库存。标准官网列价£25，退票实际价格未由库存证实则仍写未知。
 
