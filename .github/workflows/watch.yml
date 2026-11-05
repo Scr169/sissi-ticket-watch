@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       rsc_probe:
-        description: 'Verify RSC As You Like It November 6-7 in ordinary cloud Chrome before activation'
+        description: 'Manual diagnostic only: RSC cloud booking page did not load; not an active monitor'
         type: boolean
         default: false
       hebe_probe:
@@ -63,7 +63,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: python3 yard_lear.py
-      - name: Verify RSC As You Like It November 6-7 cloud access
+      - name: Diagnose RSC As You Like It November 6-7 (not active)
         if: ${{ !cancelled() && inputs.rsc_probe == true }}
         env:
           RSC_DIAGNOSTIC: 'true'
