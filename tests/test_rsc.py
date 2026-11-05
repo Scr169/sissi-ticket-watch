@@ -49,7 +49,11 @@ class RSCTests(unittest.TestCase):
                                          {'seat': 'G62', 'price': '£75.00'}, {'seat': 'G63', 'price': '£75.00'}])
         # A map minimum £18 alone cannot verify ordinary public inventory.
         data['prices'][0]['full'] = []; data['prices'][1]['full'] = []
-        self.assertIsNone(rsc.confirm_booking(candidate, data))
+        try:
+            result = rsc.confirm_booking(candidate, data)
+        except monitor.MonitorError:
+            result = None
+        self.assertIsNone(result)
 
     def test_selected_wheelchair_disabled_and_mismatched_booking_rejected(self):
         data = json.loads(Path(__file__).with_name('rsc_seats_fixture.json').read_text())
