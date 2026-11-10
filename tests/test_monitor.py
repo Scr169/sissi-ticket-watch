@@ -176,6 +176,20 @@ class StateTransitions(unittest.TestCase):
         self.assertEqual(self.saved["check_count"], 1)
         self.assertEqual(self.saved["status"], "unknown")
 
+    def test_woolf_expands_scope_without_realerting_continuous_stock(self):
+        self.saved.update(scope='london_today_only', scope_date='2026-10-18',
+                          notified_keys=['one'], candidate_notified_keys=['one'])
+        item = {'key':'one', 'when':'2026-11-14 19:00', 'url':ITEM['booking_url'], 'count':1, 'confirmed':True}
+        def observer(now, on_candidates):
+            on_candidates([item])
+            return {'total':40, 'source':'official_all_future_fixture', 'available':[item]}
+        monitor.run(config={'scope':'all_future', 'prefix':'virginia-woolf',
+                            'empty_status':'no_future_performances'}, observer=observer)
+        self.assertEqual(self.saved['scope'], 'all_future')
+        self.assertNotIn('scope_date', self.saved)
+        self.assertEqual(self.saved['performance_count'], 40)
+        self.assertEqual(self.sent, [])
+
     def test_early_signal_survives_confirmation_failure_and_deduplicates(self):
         item = {"key": "early", "when": "2026-11-14 19:30", "url": ITEM["booking_url"]}
 

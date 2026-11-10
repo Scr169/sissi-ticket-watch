@@ -96,6 +96,15 @@ test('today-only Woolf may have no remaining shows and still produce a healthy r
   const f=fixture(states); f.run('watchdog');
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,1);
 });
+
+test('all-future Woolf supports a verified empty calendar without accepting unknown stock',()=>{
+  const states=feeds(fresh);
+  states['virginia-woolf-state.json']={...fresh,status:'no_future_performances',scope:'all_future'};
+  const f=fixture(states); f.run('watchdog');
+  assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,1);
+  states['virginia-woolf-state.json'].status='unknown'; f.run('watchdog');
+  assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,1);
+});
 test('a paused or failed Woolf source cannot keep the four-source watchdog healthy',()=>{
   for(const status of ['paused','unknown']){
     const states=feeds(fresh);

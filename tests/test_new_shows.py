@@ -56,20 +56,22 @@ class WoolfTests(unittest.TestCase):
             with self.assertRaises(monitor.MonitorError):
                 woolf.parse_calendar(page(row), WOOLF_NOW)
 
-    def test_only_today_public_positive_count_is_candidate(self):
+    def test_public_positive_count_is_candidate(self):
         row = dict(ROW, availability="1")
         result = woolf.parse_calendar(page(row), WOOLF_NOW)
         self.assertEqual(len(result["candidates"]), 1)
         self.assertEqual(result["candidates"][0]["url"], ROW["booking_url"])
 
-    def test_later_dates_and_already_started_shows_never_alert(self):
+    def test_later_dates_are_included_and_started_shows_are_excluded(self):
         today = dict(ROW, availability="1")
         tomorrow = dict(ROW, start_date_time="2026-10-23 19:00:00", availability="99")
-        self.assertEqual(len(woolf.parse_calendar(page([today, tomorrow]), WOOLF_NOW)["candidates"]), 1)
+        self.assertEqual(len(woolf.parse_calendar(page([today, tomorrow]), WOOLF_NOW)["candidates"]), 2)
+        tomorrow['stop_selling_at'] = '2026-10-23 18:00:00'
         result = woolf.parse_calendar(page([today, tomorrow]), monitor.date("2026-10-22T18:00:00Z"))
-        self.assertEqual(result, {"total": 0, "candidates": []})
+        self.assertEqual(result['total'], 1)
+        self.assertEqual(result['candidates'][0]['when'], '2026-10-23 19:00')
 
-    def test_today_uses_london_date_across_midnight(self):
+    def test_future_performance_uses_london_timezone_across_midnight(self):
         # UTC is still 21 October; London has moved into 22 October.
         result = woolf.parse_calendar(page(dict(ROW, availability="1")), monitor.date("2026-10-21T23:15:00Z"))
         self.assertEqual(len(result["candidates"]), 1)
@@ -77,26 +79,46 @@ class WoolfTests(unittest.TestCase):
     def test_clock_change_does_not_keep_a_fixed_summer_offset(self):
         row = dict(ROW, start_date_time="2026-10-26 19:00:00", stop_selling_at="2026-10-26 18:00:00", availability="1")
         # After the change London equals UTC: this is still 25 October.
-        self.assertEqual(woolf.parse_calendar(page(row), monitor.date("2026-10-25T23:30:00Z")), {"total": 0, "candidates": []})
+        result = woolf.parse_calendar(page(row), monitor.date("2026-10-25T23:30:00Z"))
+        self.assertEqual(result['candidates'][0]['start'], '2026-10-26T19:00:00+00:00')
         self.assertEqual(len(woolf.parse_calendar(page(row), monitor.date("2026-10-26T00:00:00Z"))["candidates"]), 1)
 
-    def test_other_dates_inventory_is_not_inspected(self):
+    def test_other_future_dates_inventory_must_be_valid(self):
         tomorrow = dict(ROW, start_date_time="2026-10-23 19:00:00", availability="not-read", booking_url="not-read")
-        self.assertEqual(woolf.parse_calendar(page([ROW, tomorrow]), WOOLF_NOW), {"total": 1, "candidates": []})
+        with self.assertRaises(monitor.MonitorError):
+            woolf.parse_calendar(page([ROW, tomorrow]), WOOLF_NOW)
 
-    def test_no_performance_today_is_quiet_and_does_not_open_browser(self):
-        next_day = dict(ROW, start_date_time="2026-10-23 19:00:00", availability="1")
+    def test_no_future_performances_is_quiet_and_does_not_open_browser(self):
+        past = dict(ROW, start_date_time="2026-10-21 19:00:00", availability="1")
         notices = []
-        with patch.object(woolf, "read_calendar", return_value=page(next_day)), patch.object(woolf, "SohoBrowser") as browser:
+        with patch.object(woolf, "read_calendar", return_value=page(past)), patch.object(woolf, "SohoBrowser") as browser:
             result = woolf.observe(WOOLF_NOW, on_candidates=notices.append)
         self.assertEqual(result["total"], 0)
         self.assertEqual(result["available"], [])
         self.assertEqual(notices, [[]])
         browser.assert_not_called()
 
-    def test_missing_calendar_is_failure_even_when_today_has_no_show(self):
+    def test_missing_calendar_is_failure_even_when_no_future_show_is_found(self):
         with self.assertRaises(monitor.MonitorError):
             woolf.parse_calendar(page([]), WOOLF_NOW)
+
+    def test_last_run_day_is_included_but_later_dates_are_not(self):
+        last = dict(ROW, start_date_time='2026-12-19 19:00:00', stop_selling_at='2026-12-19 18:00:00', availability='1')
+        outside = dict(ROW, start_date_time='2026-12-20 19:00:00', availability='not-inspected')
+        result = woolf.parse_calendar(page([last, outside]), WOOLF_NOW)
+        self.assertEqual(result['total'], 1)
+        self.assertEqual(result['candidates'][0]['when'], '2026-12-19 19:00')
+
+    def test_future_date_opens_its_own_booking_page(self):
+        later = dict(ROW, start_date_time='2026-12-18 19:00:00', stop_selling_at='2026-12-18 18:00:00', availability='1')
+        with patch.object(woolf, 'read_calendar', return_value=page(later)), patch.object(woolf, 'SohoBrowser') as browser:
+            browser.return_value.__enter__.return_value.read.return_value = {
+                'url': later['booking_url'], 'heading': later['name'],
+                'selected': 'Select event on 2026-12-18T19:00:00', 'soldOut':True}
+            result = woolf.observe(WOOLF_NOW)
+            called = browser.return_value.__enter__.return_value.read.call_args.args[0]
+        self.assertEqual(called['when'], '2026-12-18 19:00')
+        self.assertEqual(result['total'], 1)
 
     def test_actual_nliven_low_badge_with_sold_out_notice_is_not_a_ticket(self):
         candidate = woolf.parse_calendar(page(dict(ROW, availability="1")), WOOLF_NOW)["candidates"][0]
