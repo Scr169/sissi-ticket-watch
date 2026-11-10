@@ -227,7 +227,7 @@ def run(*, config=None, observer=None, github=None):
     prefix = config.get("prefix", "eurotrash")
     subject_name = {"eurotrash": "Eurotrash", "golden-boy": "Golden Boy",
                     "an-oak-tree": "An Oak Tree（Suranne Jones）",
-                    "virginia-woolf": "Virginia Woolf（仅当天）",
+                    "virginia-woolf": "Virginia Woolf",
                     "hungry-ghost": "The Hungry Ghost",
                     "lear": "Lear（Ian McKellen）",
                     "hebe": "田馥甄《要去什麼地方》",
@@ -249,6 +249,9 @@ def run(*, config=None, observer=None, github=None):
     state["last_run_id"] = os.environ.get("GITHUB_RUN_ID")
     if config.get("scope") == "london_today_only":
         state.update(scope="london_today_only", scope_date=now.astimezone(LONDON).date().isoformat())
+    elif config.get("scope") == "all_future":
+        state.update(scope="all_future")
+        state.pop("scope_date", None)
 
     def publish_candidates(candidates):
         # Authorized on 19 October: send the early signal before slow browser
@@ -281,9 +284,9 @@ def run(*, config=None, observer=None, github=None):
             state["episode"] = int(episode)
         if state.get("failure_notice_sent"):
             gh.notify(subject_name + "｜监控恢复", f"已重新读取 {name} 官方的 {observation['total']} 场未来演出。\n\n{show_url}", prefix + "-recovery-" + str(state.get("failure_episode", 0)))
-        empty_status = "no_performances_today" if observation["total"] == 0 and config.get("empty_status") == "no_performances_today" else "sold_out"
+        empty_status = config.get("empty_status", "sold_out") if observation["total"] == 0 else "sold_out"
         state.update(status="available" if items else empty_status, notified_keys=[item["key"] for item in items], consecutive_failures=0, failure_notice_sent=False, last_error=None, performance_count=observation["total"])
-        if config.get("scope") == "london_today_only":
+        if config.get("scope") in {"london_today_only", "all_future"}:
             state.pop("paused_at", None)
             state.pop("pause_reason", None)
         state["last_checked_at"] = datetime.now(timezone.utc).isoformat()

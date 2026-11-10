@@ -10,13 +10,13 @@ const ENDS_AT = '2027-01-10T00:00:00Z';
 const MAX_AGE_MS = 15 * 60 * 1000;
 const FEEDS = [
   {name:'The Other Palace《An Oak Tree》Suranne Jones', path:'an-oak-tree-state.json', end:'2026-11-15T15:00:00Z'},
-  {name:'@sohoplace《Virginia Woolf》仅当天', path:'virginia-woolf-state.json', end:'2026-12-20T00:00:00Z'},
+  {name:'@sohoplace《Virginia Woolf》所有未来场次', path:'virginia-woolf-state.json', end:'2026-12-20T00:00:00Z'},
   {name:'Bush Theatre《The Hungry Ghost》', path:'hungry-ghost-state.json', end:'2026-10-31T20:00:00Z'}
 ];
 // Lear stopped at user request on 5 November 2026; no checks or alerts.
 // Eurotrash stopped at user request on 4 November 2026; no checks or alerts.
 // Golden Boy removed at user request on 1 November 2026 after its run ended.
-// Virginia Woolf resumed on 22 October, strictly London today only.
+// Virginia Woolf expanded to every future performance on 10 November 2026.
 // JCS is NOT an active feed: two ordinary cloud Chrome runs were rejected by
 // the official site ("We couldn't verify your browser"). Its workflow job is
 // manual diagnostic only until a real official stock read succeeds. Leaving
@@ -73,7 +73,9 @@ function watchdog() {
       last_attempt_at:state.last_attempt_at || null, run_id:state.last_run_id || null});
     if (!Number.isFinite(attempted) || now.getTime() - attempted > MAX_AGE_MS) stale.push(feed.name);
     const verified = ['sold_out','available'].includes(state.status) ||
-      (feed.path === 'virginia-woolf-state.json' && state.status === 'no_performances_today' && state.scope === 'london_today_only');
+      (feed.path === 'virginia-woolf-state.json' &&
+       ((state.status === 'no_future_performances' && state.scope === 'all_future') ||
+        (state.status === 'no_performances_today' && state.scope === 'london_today_only')));
     if (!Number.isFinite(checked) || now.getTime() - checked > MAX_AGE_MS || !verified) fullyHealthy = false;
   }
   props.setProperty('last_watchdog_at', now.toISOString());

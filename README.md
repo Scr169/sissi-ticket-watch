@@ -2,7 +2,7 @@
 
 仓库：[Scr169/sissi-ticket-watch](https://github.com/Scr169/sissi-ticket-watch)。
 
-正式监控 **An Oak Tree（Suranne Jones指定场）、Virginia Woolf（仅伦敦当天）** 的官方票源。Lear于2026-11-05按用户要求停止；Eurotrash已停止，Golden Boy已移除，The Hungry Ghost已结束。RSC仍只保留11月6日及7日三场的手动诊断，成功核验云端读取前不启用。JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
+正式监控 **An Oak Tree（Suranne Jones指定场）、Virginia Woolf（所有尚未开演场次）** 的官方票源。Virginia Woolf于2026-11-10按用户要求从仅当天扩展至全部未来场次。Lear于2026-11-05按用户要求停止；Eurotrash已停止，Golden Boy已移除，The Hungry Ghost已结束。RSC保持未启用。JCS云端未启用，本地定时任务也已因用户担心Codex额度而暂停。电脑可以关机。只提醒，不登录剧院、不占座、不加购物车、不购买。
 
 ## 独立调度与停跑告警
 
@@ -19,7 +19,7 @@
 | Eurotrash（用户已停止） | 2026-11-04按用户要求移除自动检查、测试通知入口和健康列表；独立启动monitor.py也不再查票，保留其他剧目共用函数 | 已停止，不再查票或提醒 | monitor-state.json（历史） |
 | Golden Boy（已移除） | 用户于2026-11-01要求停止；工作流和私有调度已移除，历史记录保留 | 已结束，不再检查或提醒 | golden-boy-state.json（历史） |
 | An Oak Tree / Suranne Jones | The Other Palace官方Spektrix公开票源，仅240703 / 2026-11-15 15:00，正向信号再次排除专属锁座 | 2026-11-15 15:00开演 | an-oak-tree-state.json |
-| Who’s Afraid of Virginia Woolf?（仅当天） | @sohoplace官方日历，只筛选Europe/London今天尚未开演的场次；正向信号打开当天官方nLiven票页确认 | 2026-12-19；每天午夜自动切换日期 | virginia-woolf-state.json |
+| Who’s Afraid of Virginia Woolf?（所有未来场次） | @sohoplace完整官方日历，按Europe/London排除已开演场次；正向信号逐场打开对应官方nLiven票页确认 | 所有未来日期至2026-12-19结束 | virginia-woolf-state.json；scope=all_future |
 | The Hungry Ghost | Bush Theatre官方Spektrix Studio公开场次与库存；空价格带另查明确普通票数，正向信号核对排除专属票的普通库存 | 2026-10-31 20:00最后一场开演 | hungry-ghost-state.json |
 | Lear（Ian McKellen，用户已停止） | 2026-11-05移除自动工作流和私有健康列表；独立启动yard_lear.py也不查票，历史记录保留 | 已停止，不再查票或提醒 | lear-state.json（历史） |
 | As You Like It（RSC，未启用） | 普通本机浏览器可读；19:39云端重试确认官方售票页由Imperva要求真人验证码。未解验证码或绕过，保留手动诊断rsc_probe，不参加正式调度/健康心跳 | 仅11月6日19:30、11月7日13:30及19:30；排除11月5日，11月7日19:30后结束 | rsc-as-you-like-it-state.json（尚未建立成功云端状态） |
@@ -57,7 +57,7 @@ Golden Boy 官方日历表单与脚本使用 WordPress event 11278，官方售�
 
 运行 python3 -m unittest discover -s tests -v，以及 node --test tests/test_scheduler.cjs。
 
-93 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。13 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。
+96 个 Python 测试覆盖官方来源、真实售罄/开放形态、公开座位核验、早期提醒顺序、去重、失败重试和实际读取时间。14 个调度器测试覆盖排队不等于检查、旧结果不能续命、只部分剧目更新不算全体健康、停跑和调度失败。Virginia Woolf新增范围包含未来日期、末日场次、夏令时和旧当天状态迁移的去重验证。
 
 RSC于2026-11-05申请接入；用户随后排除当天。production 62239剩余62530 / 11月6日19:30、62573 / 11月7日13:30、62531 / 11月7日19:30。读取器已实现完整场次覆盖、普通Full Price座位核验及不选座的票区查看；£18无障碍价格不作普通票价。云端直接日历和官网Book Tickets正常导航两次试读均未加载有效列表，因此当前未启用。RSC_DIAGNOSTIC=true仅手动试读；独立启动也默认关闭，须另行验证成功后才可设置RSC_ACTIVE=true并接入正式工作流及私有FEEDS。未创建任何新的本地/Codex定时任务。
 
