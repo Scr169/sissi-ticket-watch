@@ -45,7 +45,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NOTIFY_USER: ${{ github.repository_owner }}
         run: python3 an_oak_tree.py
-      - name: Check Virginia Woolf London today only
+      - name: Check Virginia Woolf all future performances
         if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
