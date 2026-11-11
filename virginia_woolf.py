@@ -1,162 +1,283 @@
-"""Read the official calendar, monitor every remaining public performance.
-
-The HTML's nlivenPerformances array is the data used by its visible calendar.
-The nLiven series calendar's generic Low badge also appears on sold-out events,
-so that badge and the evergreen Tickets button are never availability evidence.
-"""
-import json
+"""Check the official nLiven booking calendar and each public seat map."""
 import re
 import time
-from datetime import datetime
-from html.parser import HTMLParser
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
-from urllib.request import Request, urlopen
 
 import monitor
 from golden_boy import Browser
 
-SHOW = "https://sohoplace.org/shows/whos-afraid-of-virginia-woolf-2026/"
+SERIES = "https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M"
 STATE_PATH = "virginia-woolf-state.json"
 END = datetime(2026, 12, 20, tzinfo=monitor.LONDON)
+LAST_START = datetime(2026, 12, 19, 19, tzinfo=monitor.LONDON)
 NAME = "@sohoplace《Who's Afraid of Virginia Woolf?》所有未来场次"
-
-
-class Scripts(HTMLParser):
-    def __init__(self, html):
-        super().__init__()
-        self.inside = False
-        self.scripts = []
-        self.feed(html)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "script":
-            self.inside = True
-
-    def handle_endtag(self, tag):
-        if tag == "script":
-            self.inside = False
-
-    def handle_data(self, data):
-        if self.inside:
-            self.scripts.append(data)
+TITLE = "whosafraidofvirginiawoolf"
+DAY_LABEL = re.compile(r"Open events list for the (\d{1,2})(?:st|nd|rd|th) of ([A-Za-z]+ \d{4})\. (\d+) events?\.")
+EVENT_LABEL = re.compile(r"Select event (.+) on (\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)")
+PRICE = re.compile(r"£\d+(?:\.\d{2})?")
 
 
 def normalise_title(text):
     return re.sub(r"[^a-z]", "", text.lower())
 
 
-def parse_calendar(html, now):
-    if "Who's Afraid of Virginia Woolf?" not in html and "Who’s Afraid of Virginia Woolf?" not in html:
-        raise monitor.MonitorError("Official page no longer identifies Virginia Woolf")
-    arrays = []
-    for script in Scripts(html).scripts:
-        match = re.search(r"\bconst\s+nlivenPerformances\s*=\s*", script)
-        if match:
-            try:
-                value, _ = json.JSONDecoder().raw_decode(script[match.end():])
-            except ValueError as exc:
-                raise monitor.MonitorError("Official calendar is not valid JSON") from exc
-            arrays.append(value)
-    if len(arrays) != 1 or not isinstance(arrays[0], list) or not arrays[0]:
-        raise monitor.MonitorError("Full-run official calendar missing or ambiguous")
-    total, candidates, seen = 0, [], set()
-    for row in arrays[0]:
-        if not isinstance(row, dict) or row.get("product_id") != "23934" or normalise_title(row.get("name", "")) != "whosafraidofvirginiawoolf":
-            raise monitor.MonitorError("Calendar contains another production")
-        start = monitor.date(row.get("start_date_time")).astimezone(monitor.LONDON)
-        if start.isoformat() in seen:
-            raise monitor.MonitorError("Duplicate performance date")
-        seen.add(start.isoformat())
-        # User expanded the scope on 10 November: every future performance.
-        # London timezone and the October clock change follow ZoneInfo.
-        if not now < start < END:
-            continue
-        url = row.get("booking_url", "")
-        parsed = urlparse(url)
-        if parsed.scheme != "https" or parsed.netloc != "ticketing.sohoplace.org" or parsed.query or not re.fullmatch(r"/(?:shop/)?tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-" + re.escape(str(row.get("performance_id", ""))), parsed.path):
-            raise monitor.MonitorError("Unexpected official performance booking URL")
-        raw_count = row.get("availability")
-        if not isinstance(raw_count, str) or not re.fullmatch(r"\d+", raw_count):
-            raise monitor.MonitorError("No explicit official availability count")
-        total += 1
-        if not monitor.date(row.get("start_selling_at")) <= now < monitor.date(row.get("stop_selling_at")):
-            continue
-        if int(raw_count) and not monitor.restricted(row.get("description", "")):
-            candidates.append({"key": start.isoformat() + "|" + url, "url": url, "start": start.isoformat(), "when": start.strftime("%Y-%m-%d %H:%M")})
-    # A valid full calendar can have no remaining shows after the last start.
-    return {"total": total, "candidates": candidates}
+def calendar_days(labels, month, now):
+    days = {}
+    for label in labels:
+        match = DAY_LABEL.match(label)
+        if not match or match[2] != month or not int(match[3]):
+            raise monitor.MonitorError("Unrecognised nLiven booking calendar day")
+        day = datetime.strptime(f"{match[1]} {match[2]}", "%d %B %Y").date()
+        if day in days:
+            raise monitor.MonitorError("Duplicate nLiven calendar day")
+        if now.date() <= day < END.date():
+            days[day] = (label, int(match[3]))
+    return days
 
 
-def read_calendar():
-    request = Request(SHOW, headers={"Cache-Control": "no-cache", "User-Agent": "TheatreAvailabilityMonitor/1.0"})
-    with urlopen(request, timeout=40) as response:
-        return response.read(4_000_000).decode("utf-8")
+def day_events(labels, day, expected_count, now):
+    if len(labels) != expected_count or len(set(labels)) != expected_count:
+        raise monitor.MonitorError(f"Incomplete booking calendar for {day}")
+    events = {}
+    for label in labels:
+        match = EVENT_LABEL.fullmatch(label)
+        if not match or normalise_title(match[1]) != TITLE:
+            raise monitor.MonitorError(f"Unexpected booking calendar event on {day}")
+        start = monitor.date(match[2])
+        if start.date() != day or start in events:
+            raise monitor.MonitorError(f"Mismatched or duplicate performance on {day}")
+        events[start] = label
+    return [(start, label) for start, label in sorted(events.items()) if now < start < END]
+
+
+CALENDAR_DOM = r"""
+const [action, target] = arguments;
+const root = document.querySelector('[data-test="consumer-main-content"]');
+if (!root) return null;
+const daySelector = 'button[data-test^="view-series-event-calendar-day"]';
+const eventSelector = 'button[data-test="view-series-event-list-event"]';
+const label = el => el.getAttribute('aria-label') || '';
+const buttons = selector => [...root.querySelectorAll(selector)];
+const find = (selector, text) => buttons(selector).find(el => label(el) === text);
+if (action === 'day') {
+  const day = find(daySelector, target);
+  if (!day || day.disabled) return false;
+  if (day.dataset.test !== 'view-series-event-calendar-day-selected') day.click();
+  return true;
+}
+if (action === 'event') {
+  const event = find(eventSelector, target);
+  if (!event || event.disabled) return false;
+  if (!event.classList.contains('active')) event.click();
+  return true;
+}
+if (action === 'next') {
+  const next = root.querySelector('[data-test="view-series-event-dates-next-month"]');
+  if (!next || next.disabled) return false;
+  next.click();
+  return true;
+}
+const selectedDay = root.querySelector('[data-test="view-series-event-calendar-day-selected"]');
+return {
+  heading: root.querySelector('h1')?.textContent || '',
+  month: root.querySelector('[data-test="view-series-event-dates-select-month"]')?.innerText.trim() || '',
+  days: buttons(daySelector).filter(el => !el.disabled).map(label),
+  day: selectedDay ? label(selectedDay) : '',
+  events: buttons(eventSelector).map(label)
+};
+"""
 
 
 BOOKING_DOM = r"""
 const root = document.querySelector('[data-test="consumer-main-content"]');
-const usable = e => !e.disabled && e.getAttribute('aria-disabled') !== 'true' && e.getClientRects().length > 0;
-const restricted = s => /wheelchair|companion|members? only|access only|under.?25|under.?30/i.test(s);
-const seats = root ? Array.from(root.querySelectorAll('[aria-label]')).filter(e=>{
- const label=e.getAttribute('aria-label')||'';
- const explicit=e.getAttribute('data-seat-status')==='available' || e.getAttribute('data-available')==='true' || /\bavailable\b/i.test(label);
- return usable(e) && explicit && /\bseat\b|\brow\b/i.test(label) && !/unavailable|not available/i.test(label) && !restricted(label);
-}) : [];
-return {url:location.href,title:document.title,heading:root?.querySelector('h1')?.textContent||'',
- selected:root?.querySelector('[data-test="view-series-event-list-event"].active')?.getAttribute('aria-label')||'',
- soldOut:Boolean(root?.querySelector('[data-test="sold-out"]')),text:(root?.innerText||'').slice(-20000),seatCount:seats.length};
+if (!root) return null;
+const visible = el => el && el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden';
+const usable = el => visible(el) && !el.disabled && el.getAttribute('aria-disabled') !== 'true';
+const restricted = /wheelchair|companion|\b(?:ada|wac)\b|members?\s+only|access\s+only|under[ -]?(?:25|30)/i;
+const prices = new Map();
+for (const button of root.querySelectorAll('button[data-test^="view-series-shop-by-seat-map-price-level-"]')) {
+  if (!usable(button) || restricted.test(button.innerText + ' ' + (button.getAttribute('aria-label') || ''))) continue;
+  const icon = button.querySelector('svg[class*="seat--pl-"]');
+  const level = icon?.getAttribute('class').match(/\bseat--(pl-\d+)\b/);
+  const price = button.innerText.trim();
+  if (level && /^£\d+(?:\.\d{2})?$/.test(price)) prices.set(level[1], price);
+}
+const map = root.querySelector('[data-test="seat-map-svg"]');
+const seats = [];
+let unsupported = 0;
+if (visible(map)) {
+  for (const seat of map.querySelectorAll('circle[id], path[id]')) {
+    if (!usable(seat) || getComputedStyle(seat).cursor !== 'pointer') continue;
+    const level = seat.style.fill.match(/^var\(--color-(pl-\d+)\)$/);
+    if (!level) continue;
+    const description = [seat.id, seat.getAttribute('class'), seat.getAttribute('aria-label'), seat.querySelector('title')?.textContent].join(' ');
+    if (restricted.test(description)) continue;
+    if (prices.has(level[1])) seats.push({id: seat.id, price: prices.get(level[1])});
+    else unsupported++;
+  }
+}
+const soldOut = root.querySelector('[data-test="sold-out"]');
+return {
+  url: location.href,
+  heading: root.querySelector('h1')?.textContent || '',
+  selected: root.querySelector('[data-test="view-series-event-list-event"].active')?.getAttribute('aria-label') || '',
+  soldOut: Boolean(visible(soldOut) && /performance sold out/i.test(soldOut.innerText)),
+  prices: [...prices.values()],
+  seats,
+  unsupported
+};
 """
 
 
 class SohoBrowser(Browser):
-    def read(self, candidate):
-        self.call(f"/session/{self.session}/url", "POST", {"url": candidate["url"]})
-        for _ in range(25):
-            data = self.call(f"/session/{self.session}/execute/sync", "POST", {"script": BOOKING_DOM, "args": []})
-            if data.get("selected") and (data.get("soldOut") or data.get("seatCount") or "Loading Tickets" not in data.get("text", "")):
+    def script(self, script, *args):
+        return self.call(f"/session/{self.session}/execute/sync", "POST", {"script": script, "args": args})
+
+    def wait(self, read, ready, deadline):
+        while time.monotonic() < deadline:
+            data = read()
+            if data and ready(data):
                 return data
-            time.sleep(1)
-        raise monitor.MonitorError("Official nLiven booking page did not load; no CAPTCHA bypass")
+            time.sleep(0.2)
+        return None
+
+    def month(self, month, *, first=False):
+        if first:
+            self.call(f"/session/{self.session}/url", "POST", {"url": SERIES})
+        elif not self.script(CALENDAR_DOM, "next", ""):
+            raise monitor.MonitorError(f"Official booking calendar did not open {month}")
+        data = self.wait(
+            lambda: self.script(CALENDAR_DOM, "", ""),
+            lambda d: d["month"] == month and normalise_title(d["heading"]) == TITLE,
+            time.monotonic() + 12,
+        )
+        if data is None:
+            raise monitor.MonitorError(f"Official booking calendar for {month} could not be verified")
+        return data["days"]
+
+    def events(self, day_label, expected_count):
+        if not self.script(CALENDAR_DOM, "day", day_label):
+            raise monitor.MonitorError("Official booking calendar day did not open")
+        data = self.wait(
+            lambda: self.script(CALENDAR_DOM, "", ""),
+            lambda d: d["day"] == day_label and len(d["events"]) == expected_count,
+            time.monotonic() + 5,
+        )
+        if data is None:
+            raise monitor.MonitorError("Official booking calendar day did not list its performances")
+        return data["events"]
+
+    def read(self, event_label):
+        if not self.script(CALENDAR_DOM, "event", event_label):
+            raise monitor.MonitorError("Official performance booking did not open")
+        latest = None
+
+        def read_matching_page():
+            nonlocal latest
+            data = self.script(BOOKING_DOM)
+            if data and data["selected"] == event_label and valid_booking_url(data["url"]):
+                latest = data
+            return latest
+
+        result = self.wait(
+            read_matching_page,
+            lambda d: d["soldOut"] or bool(d["seats"]),
+            time.monotonic() + 5,
+        )
+        return result or latest
 
 
-def confirm_booking(candidate, data):
-    if data.get("url", "").rstrip("/") != candidate["url"].rstrip("/") or normalise_title(data.get("heading", "")) != "whosafraidofvirginiawoolf":
-        raise monitor.MonitorError("Booking page production/URL does not match")
-    local = monitor.date(candidate["start"]).astimezone(monitor.LONDON)
-    if local.strftime("%Y-%m-%dT%H:%M:%S") not in data.get("selected", ""):
-        raise monitor.MonitorError("Booking page selected datetime does not match")
-    if data.get("soldOut") is True:
-        return None
-    if monitor.restricted(data.get("text", "")):
-        return None
-    if monitor.count(data.get("seatCount")) > 0:
-        return dict(candidate, minimum_count=1, confirmed=True)
-    raise monitor.MonitorError("Official booking signal is open but no public selectable seat is confirmed")
+def valid_booking_url(url):
+    parsed = urlparse(url)
+    return (
+        parsed.scheme == "https"
+        and parsed.netloc == "ticketing.sohoplace.org"
+        and not parsed.query
+        and not parsed.fragment
+        and re.fullmatch(r"/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-\d+/?", parsed.path)
+    )
+
+
+def classify_booking(start, event_label, data):
+    if not data or not valid_booking_url(data["url"]) or normalise_title(data["heading"]) != TITLE or data["selected"] != event_label:
+        raise monitor.MonitorError("Official booking page does not match the selected performance")
+    url = data["url"].rstrip("/")
+    item = {"key": start.isoformat() + "|" + url, "url": url, "start": start.isoformat(), "when": start.strftime("%Y-%m-%d %H:%M")}
+    if data["soldOut"] and not data["seats"]:
+        return None, None
+    if not data["soldOut"] and data["seats"]:
+        prices = {seat["price"] for seat in data["seats"]}
+        if any(not PRICE.fullmatch(price) for price in prices):
+            raise monitor.MonitorError("Official seat map price is unrecognised")
+        count = len({seat["id"] for seat in data["seats"]})
+        return dict(item, minimum_count=count, confirmed=True, prices=sorted(prices, key=lambda p: float(p[1:]))), None
+    if not data["soldOut"] and data["prices"]:
+        return None, item
+    raise monitor.MonitorError("Official booking page did not verify ticket availability")
 
 
 def observe(now, on_candidates=None):
-    result = parse_calendar(read_calendar(), now)
+    now = now.astimezone(monitor.LONDON)
+    total, available, early, errors = 0, [], [], []
+    if now >= LAST_START:
+        if on_candidates is not None:
+            on_candidates([])
+        return {"total": 0, "available": [], "source": "official_sohoplace_nliven_seat_maps"}
+    month = now.replace(day=1)
+    # Leave time to save verified results before the five-minute job ends.
+    deadline = time.monotonic() + 165
+    with SohoBrowser() as browser:
+        while month < END:
+            label = month.strftime("%B %Y")
+            try:
+                days = calendar_days(browser.month(label, first=month.month == now.month), label, now)
+                if not days and month.month != now.month:
+                    raise monitor.MonitorError(f"No official performances listed for {label}")
+            except (monitor.MonitorError, OSError) as exc:
+                errors.append(str(exc))
+                break
+            for day, (day_label, expected_count) in sorted(days.items()):
+                if time.monotonic() >= deadline:
+                    errors.append("Booking calendar scan reached its time limit")
+                    break
+                try:
+                    events = day_events(browser.events(day_label, expected_count), day, expected_count, now)
+                except (monitor.MonitorError, OSError) as exc:
+                    errors.append(f"{day}: {exc}")
+                    continue
+                for start, event_label in events:
+                    total += 1
+                    try:
+                        confirmed, candidate = classify_booking(start, event_label, browser.read(event_label))
+                        if confirmed:
+                            available.append(confirmed)
+                        if candidate:
+                            early.append(candidate)
+                            errors.append(f"{start:%d %b %H:%M}: public seat map could not be confirmed")
+                    except (monitor.MonitorError, OSError) as exc:
+                        errors.append(f"{start:%d %b %H:%M}: {exc}")
+            if time.monotonic() >= deadline:
+                break
+            month = (month.replace(day=28) + timedelta(days=4)).replace(day=1)
+    if not total and not errors:
+        errors.append("No future performances were verified before the final show")
     if on_candidates is not None:
-        on_candidates(result["candidates"])
-    available = []
-    if result["candidates"]:
-        with SohoBrowser() as browser:
-            for candidate in result["candidates"]:
-                item = confirm_booking(candidate, browser.read(candidate))
-                if item:
-                    available.append(item)
-    return {"total": result["total"], "available": available, "source": "official_sohoplace_all_future_calendar_and_booking_page"}
+        on_candidates(early + available, preserve_unseen=bool(errors), confirmed_keys={item["key"] for item in available})
+    return {"total": total, "available": available, "source": "official_sohoplace_nliven_seat_maps", "errors": errors}
 
 
 def alert_body(items, now):
     lines = [NAME + " 官方售票页已确认公开可选座位。", "", f"核验时间：{now.astimezone(monitor.LONDON):%Y-%m-%d %H:%M:%S}（伦敦时间）"]
-    lines += [f"\n- **{item['when']}（伦敦时间）**：至少 1 张普通公开可选票；[官方购票页]({item['url']})" for item in items]
-    lines += ["", "监控全部尚未开演的公开场次，至2026年12月19日演出结束。票价未知，请在售票页核对。余票随时可能售出。监控不占座、不加购物车、不购买。"]
+    for item in items:
+        prices = "、".join(item["prices"])
+        lines.append(f"\n- **{item['when']}（伦敦时间）**：{item['minimum_count']} 个公开可选座位，票价 {prices}。[官方选座页]({item['url']})")
+    lines += ["", "余票随时可能售出。监控不占座、不加购物车、不购买。"]
     return "\n".join(lines)
 
 
 def run():
-    return monitor.run(config={"name": NAME, "prefix": "virginia-woolf", "url": SHOW, "end": END, "format_alert": alert_body, "scope": "all_future", "empty_status": "no_future_performances"}, observer=observe, github=lambda: monitor.GitHub(STATE_PATH))
+    return monitor.run(config={"name": NAME, "prefix": "virginia-woolf", "url": SERIES, "end": END, "format_alert": alert_body, "scope": "all_future", "empty_status": "no_future_performances"}, observer=observe, github=lambda: monitor.GitHub(STATE_PATH))
 
 
 if __name__ == "__main__":

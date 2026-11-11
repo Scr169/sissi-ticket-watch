@@ -253,19 +253,21 @@ def run(*, config=None, observer=None, github=None):
         state.update(scope="all_future")
         state.pop("scope_date", None)
 
-    def publish_candidates(candidates):
+    def publish_candidates(candidates, *, preserve_unseen=False, confirmed_keys=None):
         # Authorized on 19 October: send the early signal before slow browser
         # confirmation, explicitly distinguish it from confirmed availability.
         state["last_source_read_at"] = stamp
         old = set(state.get("candidate_notified_keys", []))
-        fresh = [item for item in candidates if item["key"] not in old]
+        quiet_keys = old if confirmed_keys is None else old.union(confirmed_keys, state.get("notified_keys", []))
+        fresh = [item for item in candidates if item["key"] not in quiet_keys]
         if fresh:
             episode = state.get("candidate_episode", 0) + 1
             fingerprint = hashlib.sha256(json.dumps([i["key"] for i in fresh], sort_keys=True).encode()).hexdigest()[:20]
             url = gh.notify(subject_name + "｜购票入口变化，余票待核实", format_candidate(subject_name, fresh, now), prefix + "-candidate-" + str(episode) + "-" + fingerprint)
             print("Early booking signal acknowledged:", url)
             state["candidate_episode"] = episode
-        state["candidate_notified_keys"] = [item["key"] for item in candidates]
+        candidate_keys = {item["key"] for item in candidates}
+        state["candidate_notified_keys"] = sorted(candidate_keys | old if preserve_unseen else candidate_keys)
         state["current_candidate_count"] = len(candidates)
     if os.environ.get("TEST_NOTIFICATION", "").lower() == "true":
         marker = prefix + "-setup-test-" + os.environ.get("GITHUB_RUN_ID", stamp)
@@ -282,6 +284,12 @@ def run(*, config=None, observer=None, github=None):
             url = gh.notify(subject_name + "｜有票了", format_alert(fresh, now), prefix + "-availability-" + episode + "-" + fingerprint)
             print("Availability notification acknowledged:", url)
             state["episode"] = int(episode)
+        if observation.get("errors"):
+            # A failed performance must not hide another verified return or
+            # reset its deduplication before the next complete scan.
+            state["notified_keys"] = sorted(old_keys | {item["key"] for item in items})
+            state["performance_count"] = observation["total"]
+            raise MonitorError("; ".join(observation["errors"]))
         if state.get("failure_notice_sent"):
             gh.notify(subject_name + "｜监控恢复", f"已重新读取 {name} 官方的 {observation['total']} 场未来演出。\n\n{show_url}", prefix + "-recovery-" + str(state.get("failure_episode", 0)))
         empty_status = config.get("empty_status", "sold_out") if observation["total"] == 0 else "sold_out"
