@@ -42,7 +42,11 @@ WOOLF_NOW = monitor.date("2026-11-11T12:27:00Z")
 MATINEE = "Select event Who's Afraid Of Virginia Woolf? on 2026-11-11T13:30:00"
 EVENING = "Select event Who's Afraid Of Virginia Woolf? on 2026-11-11T19:00:00"
 DECEMBER = "Select event Who's Afraid Of Virginia Woolf? on 2026-12-19T19:00:00"
-NOV_DAY = "Open events list for the 11th of November 2026. 2 events. Availability Low Low"
+NOV_DAY = "Open events list for the 21st of November 2026. 2 events. Availability Low Low"
+NOV_EARLIEST = "Open events list for the 20th of November 2026. 1 event. Availability Low"
+NOV_EXCLUDED = "Open events list for the 19th of November 2026. 1 event. Availability Low"
+NOV_MATINEE = MATINEE.replace("11-11T", "11-21T")
+NOV_EVENING = EVENING.replace("11-11T", "11-21T")
 DEC_DAY = "Open events list for the 19th of December 2026. 1 event. Availability Low"
 
 
@@ -57,13 +61,18 @@ class WoolfTests(unittest.TestCase):
     def test_low_badges_do_not_gate_individual_future_checks(self):
         days = woolf.calendar_days([NOV_DAY], "November 2026", WOOLF_NOW)
         day, (_, count) = next(iter(days.items()))
-        result = woolf.day_events([MATINEE, EVENING], day, count, WOOLF_NOW)
-        self.assertEqual([label for _, label in result], [MATINEE, EVENING])
-        later = monitor.date("2026-11-11T14:00:00Z")
-        self.assertEqual([label for _, label in woolf.day_events([MATINEE, EVENING], day, count, later)], [EVENING])
-        for labels in [[MATINEE], [MATINEE] * 2, [MATINEE, DECEMBER]]:
+        result = woolf.day_events([NOV_MATINEE, NOV_EVENING], day, count, WOOLF_NOW)
+        self.assertEqual([label for _, label in result], [NOV_MATINEE, NOV_EVENING])
+        later = monitor.date("2026-11-21T14:00:00Z")
+        self.assertEqual([label for _, label in woolf.day_events([NOV_MATINEE, NOV_EVENING], day, count, later)], [NOV_EVENING])
+        for labels in [[NOV_MATINEE], [NOV_MATINEE] * 2, [NOV_MATINEE, DECEMBER]]:
             with self.subTest(labels=labels), self.assertRaises(monitor.MonitorError):
                 woolf.day_events(labels, day, count, WOOLF_NOW)
+
+    def test_november_twentieth_is_included_and_earlier_days_are_excluded(self):
+        days = woolf.calendar_days([NOV_EXCLUDED, NOV_EARLIEST], "November 2026", WOOLF_NOW)
+        self.assertEqual([day.isoformat() for day in days], ["2026-11-20"])
+        self.assertEqual(next(iter(days.values())), (NOV_EARLIEST, 1))
 
     def test_live_price_levels_and_three_svg_seats(self):
         start = monitor.date("2026-11-11T13:30:00")
@@ -91,18 +100,19 @@ class WoolfTests(unittest.TestCase):
         notices = []
         with patch.object(woolf, "SohoBrowser") as browser:
             session = browser.return_value.__enter__.return_value
-            session.month.side_effect = [[NOV_DAY], [DEC_DAY]]
-            session.events.side_effect = [[MATINEE, EVENING], [DECEMBER]]
+            session.month.side_effect = [[NOV_EXCLUDED, NOV_DAY], [DEC_DAY]]
+            session.events.side_effect = [[NOV_MATINEE, NOV_EVENING], [DECEMBER]]
             session.read.side_effect = [
-                self.booking(prices=["£75.00"], seats=[{"id": "Stalls-F-25", "price": "£75.00"}]),
-                self.booking(event=EVENING, performance=2020484, prices=["£125.00"]),
+                self.booking(event=NOV_MATINEE, prices=["£75.00"], seats=[{"id": "Stalls-F-25", "price": "£75.00"}]),
+                self.booking(event=NOV_EVENING, performance=2020484, prices=["£125.00"]),
                 self.booking(event=DECEMBER, performance=2020517, soldOut=True),
             ]
             result = woolf.observe(WOOLF_NOW, on_candidates=lambda items, **options: notices.append((items, options)))
+            self.assertEqual([call.args[0] for call in session.events.call_args_list], [NOV_DAY, DEC_DAY])
         self.assertEqual(result["total"], 3)
         self.assertEqual(len(result["available"]), 1)
         self.assertEqual(len(result["errors"]), 1)
-        self.assertEqual([x["when"] for x in notices[0][0]], ["2026-11-11 19:00", "2026-11-11 13:30"])
+        self.assertEqual([x["when"] for x in notices[0][0]], ["2026-11-21 19:00", "2026-11-21 13:30"])
         self.assertTrue(notices[0][1]["preserve_unseen"])
         self.assertEqual(notices[0][1]["confirmed_keys"], {result["available"][0]["key"]})
 
