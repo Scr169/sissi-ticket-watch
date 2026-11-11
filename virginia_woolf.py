@@ -105,7 +105,6 @@ for (const button of root.querySelectorAll('button[data-test^="view-series-shop-
 }
 const map = root.querySelector('[data-test="seat-map-svg"]');
 const seats = [];
-let unsupported = 0;
 if (visible(map)) {
   for (const seat of map.querySelectorAll('circle[id], path[id]')) {
     if (!usable(seat) || getComputedStyle(seat).cursor !== 'pointer') continue;
@@ -114,7 +113,6 @@ if (visible(map)) {
     const description = [seat.id, seat.getAttribute('class'), seat.getAttribute('aria-label'), seat.querySelector('title')?.textContent].join(' ');
     if (restricted.test(description)) continue;
     if (prices.has(level[1])) seats.push({id: seat.id, price: prices.get(level[1])});
-    else unsupported++;
   }
 }
 const soldOut = root.querySelector('[data-test="sold-out"]');
@@ -124,10 +122,19 @@ return {
   selected: root.querySelector('[data-test="view-series-event-list-event"].active')?.getAttribute('aria-label') || '',
   soldOut: Boolean(visible(soldOut) && /performance sold out/i.test(soldOut.innerText)),
   prices: [...prices.values()],
-  seats,
-  unsupported
+  seats
 };
 """
+
+
+def month_ready(data, month, *, allow_empty=False):
+    if data["month"] != month or normalise_title(data["heading"]) != TITLE:
+        return False
+    # The heading changes before the day buttons are replaced after navigation.
+    days = data["days"]
+    if not days:
+        return allow_empty
+    return all((match := DAY_LABEL.match(label)) and match[2] == month for label in days)
 
 
 class SohoBrowser(Browser):
@@ -149,7 +156,7 @@ class SohoBrowser(Browser):
             raise monitor.MonitorError(f"Official booking calendar did not open {month}")
         data = self.wait(
             lambda: self.script(CALENDAR_DOM, "", ""),
-            lambda d: d["month"] == month and normalise_title(d["heading"]) == TITLE,
+            lambda d: month_ready(d, month, allow_empty=first),
             time.monotonic() + 12,
         )
         if data is None:
