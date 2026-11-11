@@ -115,6 +115,8 @@ class WoolfTests(unittest.TestCase):
     def test_month_heading_can_change_before_performance_days_refresh(self):
         snapshot = {"heading": "Who’s Afraid of Virginia Woolf?", "month": "December 2026", "days": [NOV_DAY]}
         self.assertFalse(woolf.month_ready(snapshot, "December 2026"))
+        snapshot["days"] = []
+        self.assertFalse(woolf.month_ready(snapshot, "December 2026"))
         snapshot["days"] = [DEC_DAY]
         self.assertTrue(woolf.month_ready(snapshot, "December 2026"))
 
