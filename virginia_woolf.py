@@ -127,14 +127,12 @@ return {
 """
 
 
-def month_ready(data, month, *, allow_empty=False):
+def month_ready(data, month):
     if data["month"] != month or normalise_title(data["heading"]) != TITLE:
         return False
     # The heading changes before the day buttons are replaced after navigation.
     days = data["days"]
-    if not days:
-        return allow_empty
-    return all((match := DAY_LABEL.match(label)) and match[2] == month for label in days)
+    return bool(days) and all((match := DAY_LABEL.match(label)) and match[2] == month for label in days)
 
 
 class SohoBrowser(Browser):
@@ -156,7 +154,7 @@ class SohoBrowser(Browser):
             raise monitor.MonitorError(f"Official booking calendar did not open {month}")
         data = self.wait(
             lambda: self.script(CALENDAR_DOM, "", ""),
-            lambda d: month_ready(d, month, allow_empty=first),
+            lambda d: month_ready(d, month),
             time.monotonic() + 12,
         )
         if data is None:
