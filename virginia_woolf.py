@@ -1,7 +1,7 @@
 """Check the official nLiven booking calendar and each public seat map."""
 import re
 import time
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 
 import monitor
@@ -9,9 +9,10 @@ from golden_boy import Browser
 
 SERIES = "https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M"
 STATE_PATH = "virginia-woolf-state.json"
+FIRST_DAY = date(2026, 11, 20)
 END = datetime(2026, 12, 20, tzinfo=monitor.LONDON)
 LAST_START = datetime(2026, 12, 19, 19, tzinfo=monitor.LONDON)
-NAME = "@sohoplace《Who's Afraid of Virginia Woolf?》所有未来场次"
+NAME = "@sohoplace《Who's Afraid of Virginia Woolf?》11月20日起"
 TITLE = "whosafraidofvirginiawoolf"
 DAY_LABEL = re.compile(r"Open events list for the (\d{1,2})(?:st|nd|rd|th) of ([A-Za-z]+ \d{4})\. (\d+) events?\.")
 EVENT_LABEL = re.compile(r"Select event (.+) on (\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)")
@@ -24,6 +25,7 @@ def normalise_title(text):
 
 def calendar_days(labels, month, now):
     days = {}
+    first_day = max(now.date(), FIRST_DAY)
     for label in labels:
         match = DAY_LABEL.match(label)
         if not match or match[2] != month or not int(match[3]):
@@ -31,7 +33,7 @@ def calendar_days(labels, month, now):
         day = datetime.strptime(f"{match[1]} {match[2]}", "%d %B %Y").date()
         if day in days:
             raise monitor.MonitorError("Duplicate nLiven calendar day")
-        if now.date() <= day < END.date():
+        if first_day <= day < END.date():
             days[day] = (label, int(match[3]))
     return days
 
