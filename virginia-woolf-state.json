@@ -1,25 +1,29 @@
 {
-  "last_attempt_at": "2026-11-12T15:27:25.030079+00:00",
-  "last_run_id": "43247949693",
-  "last_source_read_at": "2026-11-12T15:27:25.030079+00:00",
+  "last_attempt_at": "2026-11-12T15:32:34.576856+00:00",
+  "last_run_id": "43248856415",
+  "last_source_read_at": "2026-11-12T15:32:34.576856+00:00",
   "candidate_notified_keys": [
+    "2026-11-21T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020493",
+    "2026-11-28T13:30:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020533",
     "2026-12-03T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020503"
   ],
-  "current_candidate_count": 1,
+  "current_candidate_count": 3,
   "status": "available",
   "notified_keys": [
+    "2026-11-21T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020493",
+    "2026-11-28T13:30:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020533",
     "2026-12-03T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020503"
   ],
   "consecutive_failures": 0,
   "failure_notice_sent": false,
   "last_error": null,
   "performance_count": 35,
-  "last_checked_at": "2026-11-12T15:27:37.924259+00:00",
-  "check_count": 6227,
+  "last_checked_at": "2026-11-12T15:33:02.302447+00:00",
+  "check_count": 6228,
   "last_heartbeat": "2026-11-04T22:37:24.046404+00:00",
-  "last_state_change": "2026-11-12T15:27:25.030079+00:00",
+  "last_state_change": "2026-11-12T15:32:34.576856+00:00",
   "scope": "all_future",
   "candidate_episode": 4,
   "failure_episode": 4,
-  "episode": 12
+  "episode": 13
 }
