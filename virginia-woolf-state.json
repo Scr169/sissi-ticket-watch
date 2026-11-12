@@ -1,21 +1,25 @@
 {
-  "last_attempt_at": "2026-11-12T12:32:36.476765+00:00",
-  "last_run_id": "43218794983",
-  "last_source_read_at": "2026-11-12T12:32:36.476765+00:00",
-  "candidate_notified_keys": [],
-  "current_candidate_count": 0,
-  "status": "unknown",
-  "notified_keys": [],
-  "consecutive_failures": 2,
+  "last_attempt_at": "2026-11-12T12:33:26.508744+00:00",
+  "last_run_id": "43218798450",
+  "last_source_read_at": "2026-11-12T12:33:26.508744+00:00",
+  "candidate_notified_keys": [
+    "2026-12-10T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020509"
+  ],
+  "current_candidate_count": 1,
+  "status": "available",
+  "notified_keys": [
+    "2026-12-10T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020509"
+  ],
+  "consecutive_failures": 0,
   "failure_notice_sent": false,
-  "last_error": "Official booking calendar for November 2026 could not be verified",
-  "performance_count": 0,
-  "last_checked_at": "2026-11-12T12:23:00.708845+00:00",
-  "check_count": 6193,
+  "last_error": null,
+  "performance_count": 35,
+  "last_checked_at": "2026-11-12T12:33:43.539111+00:00",
+  "check_count": 6194,
   "last_heartbeat": "2026-11-04T22:37:24.046404+00:00",
-  "last_state_change": "2026-11-12T12:32:36.476765+00:00",
+  "last_state_change": "2026-11-12T12:33:26.508744+00:00",
   "scope": "all_future",
   "candidate_episode": 4,
   "failure_episode": 4,
-  "episode": 5
+  "episode": 6
 }
