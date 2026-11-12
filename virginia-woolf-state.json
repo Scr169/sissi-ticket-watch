@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-12T14:07:24.768376+00:00",
-  "last_run_id": "43233912843",
-  "last_source_read_at": "2026-11-12T14:07:24.768376+00:00",
+  "last_attempt_at": "2026-11-12T14:12:26.432538+00:00",
+  "last_run_id": "43234755670",
+  "last_source_read_at": "2026-11-12T14:12:26.432538+00:00",
   "candidate_notified_keys": [
     "2026-12-03T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020503",
     "2026-12-16T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020514"
@@ -16,10 +16,10 @@
   "failure_notice_sent": false,
   "last_error": null,
   "performance_count": 35,
-  "last_checked_at": "2026-11-12T14:07:43.702309+00:00",
-  "check_count": 6212,
+  "last_checked_at": "2026-11-12T14:12:56.809103+00:00",
+  "check_count": 6213,
   "last_heartbeat": "2026-11-04T22:37:24.046404+00:00",
-  "last_state_change": "2026-11-12T14:07:24.768376+00:00",
+  "last_state_change": "2026-11-12T14:12:26.432538+00:00",
   "scope": "all_future",
   "candidate_episode": 4,
   "failure_episode": 4,
