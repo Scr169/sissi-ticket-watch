@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-12T12:37:24.274472+00:00",
-  "last_run_id": "43219568328",
-  "last_source_read_at": "2026-11-12T12:37:24.274472+00:00",
+  "last_attempt_at": "2026-11-12T12:42:24.476034+00:00",
+  "last_run_id": "43220337855",
+  "last_source_read_at": "2026-11-12T12:42:24.476034+00:00",
   "candidate_notified_keys": [
     "2026-12-10T19:00:00+00:00|https://ticketing.sohoplace.org/shop/tickets/series/SPVWF01M/whos-afraid-of-virginia-woolf-2020509"
   ],
@@ -14,10 +14,10 @@
   "failure_notice_sent": false,
   "last_error": null,
   "performance_count": 35,
-  "last_checked_at": "2026-11-12T12:37:44.563490+00:00",
-  "check_count": 6195,
+  "last_checked_at": "2026-11-12T12:42:37.051015+00:00",
+  "check_count": 6196,
   "last_heartbeat": "2026-11-04T22:37:24.046404+00:00",
-  "last_state_change": "2026-11-12T12:37:24.274472+00:00",
+  "last_state_change": "2026-11-12T12:42:24.476034+00:00",
   "scope": "all_future",
   "candidate_episode": 4,
   "failure_episode": 4,
