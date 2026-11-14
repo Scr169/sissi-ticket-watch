@@ -31,7 +31,7 @@ function fixture(states, dispatchCode=204) {
   return {data,calls,run:name=>vm.runInContext(name+'()',context)};
 }
 const fresh = {status:'sold_out',last_attempt_at:'2026-10-19T13:59:00Z',last_checked_at:'2026-10-19T13:59:02Z'};
-const feeds = primary=>({'monitor-state.json':fresh,'an-oak-tree-state.json':primary,'virginia-woolf-state.json':fresh,'hungry-ghost-state.json':fresh,'lear-state.json':fresh,'jcs-on-stage-state.json':fresh});
+const feeds = primary=>({'monitor-state.json':fresh,'standard-of-living-state.json':primary,'an-oak-tree-state.json':fresh,'virginia-woolf-state.json':fresh,'hungry-ghost-state.json':fresh,'lear-state.json':fresh,'jcs-on-stage-state.json':fresh});
 
 test('only actual fresh source reads for all active productions produce a healthy heartbeat',()=>{
   const f=fixture(feeds(fresh)); f.run('watchdog'); f.run('watchdog');
@@ -44,7 +44,7 @@ test('one advancing checker cannot keep a stopped second production looking heal
   f.run('watchdog');
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,1);
   states['lear-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
-  states['an-oak-tree-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
+  states['standard-of-living-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
   states['virginia-woolf-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
   states['hungry-ghost-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
   states['lear-state.json']={...fresh,last_checked_at:'2026-10-19T14:00:00Z'};
@@ -76,11 +76,11 @@ test('dispatch failure remains a failure and never refreshes a healthy heartbeat
 });
 test('a stopped newly added show also suppresses heartbeat and is named in the alert',()=>{
   const states=feeds(fresh);
-  states['an-oak-tree-state.json']={...fresh,last_attempt_at:'2026-10-19T13:00:00Z',last_checked_at:'2026-10-19T13:00:00Z'};
+  states['standard-of-living-state.json']={...fresh,last_attempt_at:'2026-10-19T13:00:00Z',last_checked_at:'2026-10-19T13:00:00Z'};
   const f=fixture(states); f.run('watchdog');
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,0);
   const issue=f.calls.find(c=>c.url.endsWith('/issues'));
-  assert.match(JSON.parse(issue.options.payload).body,/Suranne Jones/);
+  assert.match(JSON.parse(issue.options.payload).body,/The Standard of Living/);
 });
 test('unverified JCS and stopped Woolf are excluded from health checks',()=>{
   const states=feeds(fresh);
@@ -90,6 +90,7 @@ test('unverified JCS and stopped Woolf are excluded from health checks',()=>{
   assert.equal(f.calls.filter(c=>c.url.startsWith('https://hc-ping.com/')).length,1);
   assert.equal(f.calls.filter(c=>/contents\/jcs-on-stage-state/.test(c.url)).length,0);
   assert.equal(f.calls.filter(c=>/contents\/virginia-woolf-state/.test(c.url)).length,0);
+  assert.equal(f.calls.filter(c=>/contents\/an-oak-tree-state/.test(c.url)).length,0);
   assert.equal(f.calls.filter(c=>c.url.endsWith('/issues')).length,0);
 });
 
