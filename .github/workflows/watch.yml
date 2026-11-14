@@ -39,6 +39,12 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -v
           node --test tests/test_scheduler.cjs
+      - name: Check The Standard of Living up to £125
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTIFY_USER: ${{ github.repository_owner }}
+        run: xvfb-run -a python3 standard_of_living.py
       - name: Check Bush Theatre The Hungry Ghost official availability
         if: ${{ !cancelled() }}
         env:
