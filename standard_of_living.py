@@ -20,7 +20,7 @@ CALENDAR_DOM = r"""
 const calendar = document.querySelector('.rdp');
 return {
   url: location.href, title: document.title,
-  venue: document.querySelector('.theme-wrapper')?.innerText.slice(0,1800) || '',
+  venue: document.querySelector('header[aria-label]')?.getAttribute('aria-label') || '',
   month: calendar?.querySelector('h2')?.innerText.trim() || document.querySelector('h2')?.innerText.trim() || '',
   challenge: /quick security check|couldn.t verify your browser/i.test(document.body.innerText),
   slots: [...document.querySelectorAll('.time-slot-tile')].flatMap((el, index) => {
@@ -66,7 +66,7 @@ def pence(value):
 def parse_calendar(data, month, now):
     expected = datetime(2026, month, 1).strftime("%B 2026")
     if data["url"] != f"{CALENDAR}?date=2026-{month:02}" or NAME not in data["title"] or VENUE not in data["venue"] or data["month"] != expected:
-        raise monitor.MonitorError("Wrong production or month in the official Haymarket calendar")
+        raise monitor.MonitorError(f"Unexpected Haymarket calendar: {data['title']!r} / {data['venue']!r} / {data['month']!r}")
     if not data["slots"]:
         raise monitor.MonitorError("Official Haymarket calendar was empty")
     slots = {}
