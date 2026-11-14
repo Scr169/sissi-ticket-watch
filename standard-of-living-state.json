@@ -1,25 +1,19 @@
 {
-  "last_attempt_at": "2026-11-14T18:57:22.423471+00:00",
-  "last_run_id": "43629423011",
-  "last_source_read_at": "2026-11-14T18:57:22.423471+00:00",
-  "candidate_notified_keys": [
-    "2026-11-14T14:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138032",
-    "2026-11-14T19:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1137968"
-  ],
+  "last_attempt_at": "2026-11-14T19:02:28.864110+00:00",
+  "last_run_id": "43629873343",
+  "last_source_read_at": "2026-11-14T19:02:28.864110+00:00",
+  "candidate_notified_keys": [],
   "current_candidate_count": 0,
-  "notified_keys": [
-    "2026-11-14T14:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138032",
-    "2026-11-14T19:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1137968"
-  ],
-  "performance_count": 33,
-  "status": "unknown",
-  "consecutive_failures": 62,
-  "last_error": "Haymarket public booking page did not load",
+  "notified_keys": [],
+  "performance_count": 32,
+  "status": "sold_out",
+  "consecutive_failures": 0,
+  "last_error": null,
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-14T18:57:22.423471+00:00",
-  "failure_notice_sent": true,
-  "last_checked_at": "2026-11-14T13:52:38.418342+00:00",
-  "check_count": 119,
+  "last_state_change": "2026-11-14T19:02:28.864110+00:00",
+  "failure_notice_sent": false,
+  "last_checked_at": "2026-11-14T19:02:48.165711+00:00",
+  "check_count": 120,
   "episode": 5,
   "failure_episode": 3
 }
