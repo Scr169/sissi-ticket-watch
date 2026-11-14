@@ -9,7 +9,7 @@ const WORKFLOW = 'watch.yml';
 const ENDS_AT = '2027-01-10T00:00:00Z';
 const MAX_AGE_MS = 15 * 60 * 1000;
 const FEEDS = [
-  {name:'The Other Palace《An Oak Tree》Suranne Jones', path:'an-oak-tree-state.json', end:'2026-11-15T15:00:00Z'},
+  {name:'Theatre Royal Haymarket《The Standard of Living》', path:'standard-of-living-state.json', end:'2026-12-12T19:30:00Z'},
   {name:'Bush Theatre《The Hungry Ghost》', path:'hungry-ghost-state.json', end:'2026-10-31T20:00:00Z'}
 ];
 // Lear stopped at user request on 5 November 2026; no checks or alerts.
