@@ -1,14 +1,17 @@
 {
-  "last_attempt_at": "2026-11-14T03:17:25.594901+00:00",
-  "last_run_id": "43550838154",
-  "last_source_read_at": "2026-11-14T03:17:25.594901+00:00",
+  "last_attempt_at": "2026-11-14T03:18:43.117815+00:00",
+  "last_run_id": "43550943598",
+  "last_source_read_at": "2026-11-14T03:18:43.117815+00:00",
   "candidate_notified_keys": [],
   "current_candidate_count": 0,
   "notified_keys": [],
-  "performance_count": 0,
-  "status": "unknown",
-  "consecutive_failures": 2,
-  "last_error": "Wrong production or month in the official Haymarket calendar",
+  "performance_count": 34,
+  "status": "sold_out",
+  "consecutive_failures": 0,
+  "last_error": null,
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-14T03:17:25.594901+00:00"
+  "last_state_change": "2026-11-14T03:18:43.117815+00:00",
+  "failure_notice_sent": false,
+  "last_checked_at": "2026-11-14T03:19:06.549340+00:00",
+  "check_count": 1
 }
