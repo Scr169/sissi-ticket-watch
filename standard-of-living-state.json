@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-14T11:32:23.061432+00:00",
-  "last_run_id": "43590489815",
-  "last_source_read_at": "2026-11-14T11:32:23.061432+00:00",
+  "last_attempt_at": "2026-11-14T11:37:21.995387+00:00",
+  "last_run_id": "43590896893",
+  "last_source_read_at": "2026-11-14T11:37:21.995387+00:00",
   "candidate_notified_keys": [
     "2026-11-14T14:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138032",
     "2026-11-14T19:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1137968",
@@ -18,9 +18,9 @@
   "consecutive_failures": 0,
   "last_error": null,
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-14T11:32:23.061432+00:00",
+  "last_state_change": "2026-11-14T11:37:21.995387+00:00",
   "failure_notice_sent": false,
-  "last_checked_at": "2026-11-14T11:32:35.372693+00:00",
-  "check_count": 99,
+  "last_checked_at": "2026-11-14T11:37:51.880185+00:00",
+  "check_count": 100,
   "episode": 3
 }
