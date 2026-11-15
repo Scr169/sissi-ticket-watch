@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-15T11:47:20.167174+00:00",
-  "last_run_id": "43710596687",
-  "last_source_read_at": "2026-11-15T11:47:20.167174+00:00",
+  "last_attempt_at": "2026-11-15T11:52:21.570571+00:00",
+  "last_run_id": "43710999668",
+  "last_source_read_at": "2026-11-15T11:52:21.570571+00:00",
   "candidate_notified_keys": [
     "2026-11-17T19:00:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138006",
     "2026-11-19T14:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138033",
@@ -14,14 +14,14 @@
     "2026-11-19T19:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1137969"
   ],
   "performance_count": 32,
-  "status": "unknown",
-  "consecutive_failures": 1,
-  "last_error": "Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map does not match the selected performance; Haymarket seat map d",
+  "status": "available",
+  "consecutive_failures": 0,
+  "last_error": null,
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-15T11:47:20.167174+00:00",
+  "last_state_change": "2026-11-15T11:52:21.570571+00:00",
   "failure_notice_sent": false,
-  "last_checked_at": "2026-11-15T11:42:46.714623+00:00",
-  "check_count": 322,
+  "last_checked_at": "2026-11-15T11:52:35.331687+00:00",
+  "check_count": 323,
   "episode": 7,
   "failure_episode": 3
 }
