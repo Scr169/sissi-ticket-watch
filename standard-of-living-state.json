@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-16T11:57:21.827654+00:00",
-  "last_run_id": "43862224418",
-  "last_source_read_at": "2026-11-16T11:57:21.827654+00:00",
+  "last_attempt_at": "2026-11-16T12:02:31.181474+00:00",
+  "last_run_id": "43862958197",
+  "last_source_read_at": "2026-11-16T12:02:31.181474+00:00",
   "candidate_notified_keys": [
     "2026-11-23T19:00:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138008"
   ],
@@ -14,10 +14,10 @@
   "consecutive_failures": 0,
   "last_error": null,
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-16T11:57:21.827654+00:00",
+  "last_state_change": "2026-11-16T12:02:31.181474+00:00",
   "failure_notice_sent": false,
-  "last_checked_at": "2026-11-16T11:57:37.256812+00:00",
-  "check_count": 574,
+  "last_checked_at": "2026-11-16T12:02:50.227208+00:00",
+  "check_count": 575,
   "episode": 11,
   "failure_episode": 4
 }
