@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-20T09:52:21.094670+00:00",
-  "last_run_id": "44714350685",
-  "last_source_read_at": "2026-11-20T09:52:21.094670+00:00",
+  "last_attempt_at": "2026-11-20T09:57:21.036337+00:00",
+  "last_run_id": "44715049437",
+  "last_source_read_at": "2026-11-20T09:57:21.036337+00:00",
   "candidate_notified_keys": [
     "2026-12-10T14:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138039"
   ],
@@ -14,10 +14,10 @@
   "consecutive_failures": 0,
   "last_error": null,
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-20T09:52:21.094670+00:00",
+  "last_state_change": "2026-11-20T09:57:21.036337+00:00",
   "failure_notice_sent": false,
-  "last_checked_at": "2026-11-20T09:52:33.043643+00:00",
-  "check_count": 1197,
+  "last_checked_at": "2026-11-20T09:57:30.215657+00:00",
+  "check_count": 1198,
   "episode": 17,
   "failure_episode": 10
 }
