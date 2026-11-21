@@ -1,7 +1,7 @@
 {
-  "last_attempt_at": "2026-11-21T14:42:22.864714+00:00",
-  "last_run_id": "44915300611",
-  "last_source_read_at": "2026-11-21T14:42:22.864714+00:00",
+  "last_attempt_at": "2026-11-21T14:47:26.927397+00:00",
+  "last_run_id": "44915726850",
+  "last_source_read_at": "2026-11-21T14:47:26.927397+00:00",
   "candidate_notified_keys": [
     "2026-11-28T14:30:00+00:00|https://ticketing.trh.co.uk/event/79347/performance/1138036"
   ],
@@ -11,10 +11,10 @@
   ],
   "performance_count": 25,
   "status": "unknown",
-  "consecutive_failures": 3,
+  "consecutive_failures": 4,
   "last_error": "Haymarket public booking page did not load",
   "last_heartbeat": "2026-11-14T03:17:09.285564+00:00",
-  "last_state_change": "2026-11-21T14:42:22.864714+00:00",
+  "last_state_change": "2026-11-21T14:47:26.927397+00:00",
   "failure_notice_sent": true,
   "last_checked_at": "2026-11-21T14:27:49.147259+00:00",
   "check_count": 1436,
